@@ -1,39 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(python:*)",
-      "Bash(python -m pytest tests/services/test_container_file_ops.py -v)",
-      "Bash(python -m pytest --tb=short -q)",
-      "Bash(python -m pytest tests/ -v --tb=short)",
-      "Bash(python -c \":*)",
-      "Bash(python -m pytest tests/ -q)",
-      "Bash(pytest tests/ -v)",
-      "Bash(pytest tests/services/test_mc_server_creator.py -v)",
-      "Bash(pytest)",
-      "Bash(pytest -v)",
-      "Bash(pytest -x -q)",
-      "Bash(pip install:*)",
-      "Bash(xargs wc:*)",
-      "Bash(xargs cat:*)",
-      "Bash(grep -E \"\\\\.\\(env|yml|yaml|cfg|ini|toml\\)$\")",
-      "Bash(grep -E \"\\\\.py$\")",
-      "Bash(curl -s http://localhost:8000/health)",
-      "Bash(curl -s http://localhost:8001/health)",
-      "Bash(gh pr:*)",
-      "Bash(git checkout:*)",
-      "Bash(cargo --version)",
-      "Bash(claude doctor *)",
-      "Bash(ls ~/.claude/*.json)",
-      "Bash(ls ~/.local/share/claude/*.json)",
-      "Edit(~/.claude/skills/query/**)",
-      "mcp__plugin_playwright_playwright__browser_navigate",
-      "mcp__plugin_playwright_playwright__browser_install",
-      "mcp__plugin_context7_context7__resolve-library-id",
-      "mcp__plugin_context7_context7__query-docs",
-      "mcp__claude_ai_Context7__resolve-library-id",
-      "mcp__claude_ai_Context7__query-docs",
-      "WebFetch(domain:www.anthropic.com)"
-    ],
     "defaultMode": "auto"
   },
   "model": "opus[1m]",
@@ -66,15 +32,7 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "github@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true,
-    "ralph-loop@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
     "andrej-karpathy-skills@karpathy-skills": true
   },
   "extraKnownMarketplaces": {
