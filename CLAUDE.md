@@ -1,15 +1,13 @@
 # ~/.claude/ — synced Claude Code setup
 
-This repo is the portable part of `~/.claude/`. Clone it on a new machine, and your skills, agents, saved plans, and plugin list come with you. Auto-memory (per-project memory files Claude writes) is intentionally *not* synced — each machine builds its own as you work.
+This repo is the portable part of `~/.claude/`. Clone it on a new machine, and your skills, agents, and plugin list come with you. Auto-memory (per-project memory files Claude writes) is intentionally *not* synced — each machine builds its own as you work.
 
 ## What's tracked
 
 | Path | What it is |
 |------|------------|
 | `settings.json` | Shared settings: permissions, hooks, model prefs, env vars |
-| `skills/` | User-authored and installed skills |
-| `plans/` | Saved implementation plans |
-| `docs/` | Design notes and reference docs |
+| `skills/` | User-authored and installed skills (each skill self-contained in its own folder, including any design notes or support files) |
 | `plugins/blocklist.json` | Plugin blocklist |
 
 Plugin configuration source-of-truth lives entirely in `settings.json`: `enabledPlugins` names which plugins to run, and `extraKnownMarketplaces` (plus the built-in `claude-plugins-official` marketplace) names where to fetch them from. Claude Code handles installation on first run.
@@ -60,7 +58,7 @@ claude                   # prompts for auth on first run
 
 ## Updating the synced setup
 
-Work in `~/.claude/` as normal — skills, plans, and settings get updated in place. When you want to sync:
+Work in `~/.claude/` as normal — skills and settings get updated in place. When you want to sync:
 
 ```bash
 cd ~/.claude
@@ -80,5 +78,5 @@ git pull
 ## Safety
 
 - **Before every commit**, scan `git status` for anything that looks like a token, key, or credential. The `.gitignore` covers known locations, but new Claude Code versions may add new files.
-- The repo is **private**. Keep it that way. Saved plans often contain project-specific context.
+- The repo is **private**. Keep it that way. Skill definitions can contain project-specific context.
 - If you ever commit a secret by accident: rotate it immediately, then rewrite history (`git filter-repo` or BFG) before the next push.

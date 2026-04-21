@@ -1,14 +1,13 @@
 ---
-description: Ship a feature end-to-end — spec, plan, implement, PR, merge, cleanup — with one user checkpoint at spec approval
-argument-hint: <one-line feature description>
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, Skill, AskUserQuestion, WebFetch, TaskCreate, TaskUpdate
+name: ship-feature
+description: Use when the user wants to ship a feature end-to-end — invoked via "/ship-feature <one-liner>". Orchestrates spec (brainstorm) → plan → implement in parallel worktrees → PR → CI fix → merge → cleanup, with one user checkpoint at spec approval.
 ---
 
 You are running the `/ship-feature` orchestrator. The user's one-line feature description is:
 
 $ARGUMENTS
 
-Follow the design at `~/.claude/docs/ship-feature-design.md`. Execute phases in order. Create a TaskCreate todo for every phase so the user can see progress.
+Follow the design at `~/.claude/skills/ship-feature/design.md`. Execute phases in order. Create a TaskCreate todo for every phase so the user can see progress.
 
 ## Phase 0: Preconditions
 

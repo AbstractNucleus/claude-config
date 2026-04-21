@@ -213,13 +213,13 @@ Subagents dispatched by the orchestrator (each runs in an isolated context, retu
 
 ## File layout
 
-- `~/.claude/commands/ship-feature.md` — the orchestrator prompt (argument-hint: `<one-line feature description>`)
-- `~/.claude/docs/ship-feature-design.md` — this document
+- `~/.claude/skills/ship-feature/SKILL.md` — the orchestrator prompt (takes `$ARGUMENTS` = one-line feature description)
+- `~/.claude/skills/ship-feature/design.md` — this document
 - `<repo>/docs/specs/YYYY-MM-DD-<slug>-spec.md` — per-invocation spec (lives in the target repo)
 - `<repo>/docs/plans/YYYY-MM-DD-<slug>-plan.md` — per-invocation plan (ditto)
 - `<repo>/docs/plans/YYYY-MM-DD-<slug>-concerns.json` — machine-readable plan scheduler input
 
-No new skill files. All subagents are prompt-only and inlined into the command file, unless one grows past ~40 lines, in which case it moves to `~/.claude/skills/learned/ship-feature-<subagent>.md`.
+All subagents are prompt-only and inlined into `SKILL.md`. If one grows past ~40 lines, move it into a sibling file (`~/.claude/skills/ship-feature/<subagent>.md`) so the skill stays self-contained.
 
 ## Preconditions at invocation
 
