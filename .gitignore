@@ -1,7 +1,7 @@
 # ============================================================
 # ~/.claude/ sync — exclude secrets, machine-specific state,
 # caches, logs, and conversation history. Track config, skills,
-# rules, plans, docs, plugin manifests, and memory.
+# plugin blocklist, and memory.
 # ============================================================
 
 # --- Secrets (NEVER commit) ---
@@ -47,6 +47,7 @@ tasks/
 .buddy-reroll.json
 project-config.json
 security_warnings_state_*.json
+mcp-needs-auth-cache.json
 
 # --- Plugins: only blocklist is tracked ---
 # installed_plugins.json and known_marketplaces.json are rewritten at
