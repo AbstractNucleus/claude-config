@@ -1,0 +1,1 @@
+- [Scale process output to the decision](feedback_process_scaling.md) — don't run the full brainstorming-skill flow on atomic choices like names

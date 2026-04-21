@@ -1,0 +1,72 @@
+# ============================================================
+# ~/.claude/ sync — exclude secrets, machine-specific state,
+# caches, logs, and conversation history. Track config, skills,
+# rules, plans, docs, plugin manifests, and memory.
+# ============================================================
+
+# --- Secrets (NEVER commit) ---
+.credentials.json
+config.json
+*.pem
+*.key
+
+# --- Machine-specific overrides ---
+# settings.local.json is the canonical place for per-machine config
+# (paths, OS-specific permissions, local env vars). Keep it local.
+settings.local.json
+
+# --- Stale settings backups ---
+settings.json.bak
+settings.json.orig
+settings.json.pre-*
+*.backup.*/
+backups/
+
+# --- Logs & telemetry ---
+*.log
+bash-commands.log
+cost-tracker.log
+history.jsonl
+stats-cache.json
+telemetry/
+usage-data/
+metrics/
+homunculus/
+
+# --- Caches & transient state ---
+cache/
+downloads/
+paste-cache/
+file-history/
+ide/
+session-data/
+session-env/
+sessions/
+shell-snapshots/
+tasks/
+.buddy-reroll.json
+project-config.json
+
+# --- Plugins: keep manifests, drop installed content & caches ---
+plugins/cache/
+plugins/data/
+plugins/marketplaces/
+plugins/install-counts-cache.json
+# Tracked: installed_plugins.json, known_marketplaces.json, blocklist.json
+# Marketplaces are third-party git clones — re-fetched automatically from
+# known_marketplaces.json on each machine.
+
+# --- Projects: keep memory/, drop everything else ---
+# Conversation history (jsonl), todos, shell-snapshots per project
+# get excluded. memory/ (auto-memory content) is re-included.
+/projects/*
+!/projects/*/
+/projects/*/**
+!/projects/*/memory/
+!/projects/*/memory/**
+
+# --- Editor / OS ---
+.DS_Store
+Thumbs.db
+*.swp
+*~
