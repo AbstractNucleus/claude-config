@@ -14,16 +14,6 @@
           }
         ]
       }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npx buddy-reroll --apply-hook"
-          }
-        ]
-      }
     ]
   },
   "statusLine": {
