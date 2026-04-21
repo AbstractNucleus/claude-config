@@ -1,2 +1,0 @@
-- [Auth preference for internal projects](user_auth_preference.md) — private apps sit behind Tailscale with NO app-level auth; if auth ever needed, email+password+TOTP (never social login)
-- [noelkleen.com domain layout](project_noelkleen_domain.md) — personal root domain; protected apps live under `admin.noelkleen.com` subzone (postgres, mcontrol, analytics, finance, auth)

@@ -1,1 +1,0 @@
-- [Engine/UI thread boundary](project_engine_ui_boundary.md) — Qt-free engine fires plain callback; MainWindow owns the Qt signal that marshals to the main thread

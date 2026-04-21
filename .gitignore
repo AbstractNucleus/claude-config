@@ -46,24 +46,28 @@ shell-snapshots/
 tasks/
 .buddy-reroll.json
 project-config.json
+security_warnings_state_*.json
 
-# --- Plugins: keep manifests, drop installed content & caches ---
+# --- Plugins: only blocklist is tracked ---
+# installed_plugins.json and known_marketplaces.json are rewritten at
+# runtime with per-machine timestamps and Windows-style install paths,
+# so tracking them causes churn. Source-of-truth:
+#   - which plugins to enable → settings.json (enabledPlugins)
+#   - marketplace sources → settings.json (extraKnownMarketplaces),
+#     plus the built-in claude-plugins-official marketplace
+# Marketplace git clones are re-fetched on each machine.
 plugins/cache/
 plugins/data/
 plugins/marketplaces/
 plugins/install-counts-cache.json
-# Tracked: installed_plugins.json, known_marketplaces.json, blocklist.json
-# Marketplaces are third-party git clones — re-fetched automatically from
-# known_marketplaces.json on each machine.
+plugins/installed_plugins.json
+plugins/known_marketplaces.json
 
-# --- Projects: keep memory/, drop everything else ---
-# Conversation history (jsonl), todos, shell-snapshots per project
-# get excluded. memory/ (auto-memory content) is re-included.
-/projects/*
-!/projects/*/
-/projects/*/**
-!/projects/*/memory/
-!/projects/*/memory/**
+# --- Projects: ignore entirely ---
+# Conversation history, todos, shell-snapshots, and auto-memory are all
+# per-machine/per-session state. Not worth syncing — each machine's
+# Claude Code maintains its own projects/ content.
+projects/
 
 # --- Editor / OS ---
 .DS_Store

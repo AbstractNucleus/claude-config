@@ -1,4 +1,0 @@
-- [Brainstorming doesn't auto-chain to writing-plans](feedback_brainstorming_handoff.md) — wait for explicit approval before invoking writing-plans after a brainstorming session produces a doc
-- [Spec → plan → subagent-driven execution, branch per feature](feedback_workflow_decomposition.md) — default pipeline for substantive Compositor work; decompose large units into independent sub-projects before brainstorming
-- [content/ is never gitignored](project_content_not_gitignored.md) — all files under content/ (including generated word frequency tables) are committed, never ignored
-- [Git analysis summary format](feedback_git_analysis_format.md) — group by PR/feature with branch state and untracked files; flag non-user-authored commits
