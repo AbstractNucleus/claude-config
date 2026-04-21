@@ -1,6 +1,6 @@
 # ~/.claude/ — synced Claude Code setup
 
-This repo is the portable part of `~/.claude/`. Clone it on a new machine, and your skills, rules, agents, saved plans, and plugin list come with you. Auto-memory (per-project memory files Claude writes) is intentionally *not* synced — each machine builds its own as you work.
+This repo is the portable part of `~/.claude/`. Clone it on a new machine, and your skills, agents, saved plans, and plugin list come with you. Auto-memory (per-project memory files Claude writes) is intentionally *not* synced — each machine builds its own as you work.
 
 ## What's tracked
 
@@ -8,7 +8,6 @@ This repo is the portable part of `~/.claude/`. Clone it on a new machine, and y
 |------|------------|
 | `settings.json` | Shared settings: permissions, hooks, model prefs, env vars |
 | `skills/` | User-authored and installed skills |
-| `rules/` | Global instruction rulesets (common + per-language) |
 | `plans/` | Saved implementation plans |
 | `docs/` | Design notes and reference docs |
 | `plugins/blocklist.json` | Plugin blocklist |
@@ -61,7 +60,7 @@ claude                   # prompts for auth on first run
 
 ## Updating the synced setup
 
-Work in `~/.claude/` as normal — skills, rules, plans, and settings get updated in place. When you want to sync:
+Work in `~/.claude/` as normal — skills, plans, and settings get updated in place. When you want to sync:
 
 ```bash
 cd ~/.claude
@@ -81,5 +80,5 @@ git pull
 ## Safety
 
 - **Before every commit**, scan `git status` for anything that looks like a token, key, or credential. The `.gitignore` covers known locations, but new Claude Code versions may add new files.
-- The repo is **private**. Keep it that way. Saved plans and rulesets often contain project-specific context.
+- The repo is **private**. Keep it that way. Saved plans often contain project-specific context.
 - If you ever commit a secret by accident: rotate it immediately, then rewrite history (`git filter-repo` or BFG) before the next push.
