@@ -49,20 +49,13 @@ project-config.json
 security_warnings_state_*.json
 mcp-needs-auth-cache.json
 
-# --- Plugins: only blocklist is tracked ---
-# installed_plugins.json and known_marketplaces.json are rewritten at
-# runtime with per-machine timestamps and Windows-style install paths,
-# so tracking them causes churn. Source-of-truth:
+# --- Plugins: ignore entirely ---
+# All of plugins/ is runtime state — caches, marketplace clones, and
+# per-machine manifests that are rewritten on load. Source-of-truth:
 #   - which plugins to enable → settings.json (enabledPlugins)
 #   - marketplace sources → settings.json (extraKnownMarketplaces),
 #     plus the built-in claude-plugins-official marketplace
-# Marketplace git clones are re-fetched on each machine.
-plugins/cache/
-plugins/data/
-plugins/marketplaces/
-plugins/install-counts-cache.json
-plugins/installed_plugins.json
-plugins/known_marketplaces.json
+plugins/
 
 # --- Projects: ignore entirely ---
 # Conversation history, todos, shell-snapshots, and auto-memory are all

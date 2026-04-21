@@ -8,7 +8,6 @@ This repo is the portable part of `~/.claude/`. Clone it on a new machine, and y
 |------|------------|
 | `settings.json` | Shared settings: permissions, hooks, model prefs, env vars |
 | `skills/` | User-authored and installed skills (each skill self-contained in its own folder, including any design notes or support files) |
-| `plugins/blocklist.json` | Plugin blocklist |
 
 Plugin configuration source-of-truth lives entirely in `settings.json`: `enabledPlugins` names which plugins to run, and `extraKnownMarketplaces` (plus the built-in `claude-plugins-official` marketplace) names where to fetch them from. Claude Code handles installation on first run.
 
@@ -16,8 +15,7 @@ Plugin configuration source-of-truth lives entirely in `settings.json`: `enabled
 
 - **`.credentials.json`, `config.json`** — contain OAuth tokens and API keys.
 - **`settings.local.json`** — **machine-specific overrides** (see below).
-- **`plugins/data/`, `plugins/cache/`, `plugins/marketplaces/`** — installed plugin content and cloned marketplace repos; re-fetched automatically.
-- **`plugins/installed_plugins.json`, `plugins/known_marketplaces.json`** — both are rewritten at runtime with per-machine `installPath` / `installLocation` paths and timestamps, so tracking them causes churn. Source-of-truth for enablement lives in `settings.json → enabledPlugins`; for marketplace sources in `settings.json → extraKnownMarketplaces`.
+- **`plugins/`** — all runtime state: installed plugin content, cloned marketplace repos, and per-machine manifests (`installed_plugins.json`, `known_marketplaces.json`) that get rewritten on load with machine-specific paths and timestamps. Source-of-truth for enablement lives in `settings.json → enabledPlugins`; for marketplace sources in `settings.json → extraKnownMarketplaces`.
 - **`projects/`** — all per-project state (conversation history, todos, shell-snapshots, and auto-memory). Claude Code manages this directory; none of it benefits from syncing across machines.
 - **Logs, caches, telemetry** — `bash-commands.log`, `cost-tracker.log`, `history.jsonl`, `cache/`, `paste-cache/`, `ide/`, `sessions/`, `telemetry/`, `usage-data/`, etc.
 - **Stale backups** — `settings.json.bak`, `*.backup.*/`, `backups/`.
