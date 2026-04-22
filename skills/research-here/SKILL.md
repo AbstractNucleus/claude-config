@@ -48,26 +48,26 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 
 ### 2. Decompose
 
-- Read `../\_research-shared/agent-prompts.md` §Decomposer.
+- Read `./agent-prompts.md` §Decomposer.
 - Dispatch one Agent call with the Decomposer prompt and user's topic.
 - Validate: 5–7 angles, non-empty `boundaries`.
 
 ### 3. Research (parallel)
 
-- Read `../\_research-shared/agent-prompts.md` §Researcher.
+- Read `./agent-prompts.md` §Researcher.
 - Dispatch ONE Agent call per angle, all in a single message (parallel).
 - Collect outputs by angle id.
 
 ### 4. Verify
 
-- Read `../\_research-shared/agent-prompts.md` §Verifier and `../\_research-shared/verification-rubric.md`.
+- Read `./agent-prompts.md` §Verifier and `./verification-rubric.md`.
 - Dispatch one Verifier Agent call. Parse JSON.
 - Check global abort conditions — if triggered, stop and report. Do not synthesize.
 
 ### 5. Skeptic (deep only)
 
 - If `depth == shallow`, skip to step 7.
-- Read `../\_research-shared/agent-prompts.md` §Skeptic.
+- Read `./agent-prompts.md` §Skeptic.
 - Dispatch one Skeptic Agent call. Parse challenges JSON.
 
 ### 6. Re-research (deep only)
@@ -78,7 +78,7 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 
 ### 7. Synthesize
 
-- Read `../\_research-shared/agent-prompts.md` §Synthesizer — local mode.
+- Read `./agent-prompts.md` §Synthesizer — local mode.
 - Filter claims: only those with an OK verdict that survived the Skeptic (in deep mode).
 - Dispatch the Synthesizer Agent. It writes a `README.md`-shaped document with inline URLs and a Sources table.
 
@@ -140,7 +140,7 @@ Tell the user:
 
 ## Partial Failure Handling
 
-Follow `../\_research-shared/verification-rubric.md` exactly:
+Follow `./verification-rubric.md` exactly:
 - Per-claim failure matrix
 - Skeptic-challenge matrix
 - Global abort conditions
@@ -148,8 +148,8 @@ Follow `../\_research-shared/verification-rubric.md` exactly:
 
 ## Files This Skill Reads
 
-- `C:\Users\noelh\.claude\skills\_research-shared\agent-prompts.md`
-- `C:\Users\noelh\.claude\skills\_research-shared\verification-rubric.md`
+- `C:\Users\noelh\.claude\skills\research-here\agent-prompts.md`
+- `C:\Users\noelh\.claude\skills\research-here\verification-rubric.md`
 
 Read with the Read tool at workflow start.
 

@@ -1,6 +1,6 @@
 # Verification Rubric & Failure Handling
 
-Shared reference for `/deep-research` and `/research-here`. Used by the Verifier and Synthesizer agents.
+Companion reference for `/deep-research`. Used by the Verifier and Synthesizer agents.
 
 ## Verdict rubric
 

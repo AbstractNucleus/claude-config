@@ -46,14 +46,14 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 
 ### 2. Decompose
 
-- Read `../\_research-shared/agent-prompts.md` §Decomposer.
+- Read `./agent-prompts.md` §Decomposer.
 - Dispatch one Agent call with the Decomposer prompt, substituting `{{topic}}` and any context the user already provided.
 - Parse the JSON. Validate: 5–7 angles, all have non-empty `boundaries`.
 - Announce to the user: "Decomposed into N angles: <titles>." Proceed without confirmation — auto mode.
 
 ### 3. Research (parallel)
 
-- Read `../\_research-shared/agent-prompts.md` §Researcher.
+- Read `./agent-prompts.md` §Researcher.
 - Dispatch ONE Agent call per angle, all in a single message (parallel).
   - `subagent_type: general-purpose`
   - `description: Research angle N — <title>`
@@ -62,7 +62,7 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 
 ### 4. Verify
 
-- Read `../\_research-shared/agent-prompts.md` §Verifier and `../\_research-shared/verification-rubric.md`.
+- Read `./agent-prompts.md` §Verifier and `./verification-rubric.md`.
 - Dispatch one Agent call with the Verifier prompt and the concatenated researcher outputs.
 - Parse the verdict JSON.
 - Check global abort conditions from the rubric (`>40% DEAD/HALLUCINATED` etc.). If triggered, stop and report to the user — do not synthesize.
@@ -70,7 +70,7 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 ### 5. Skeptic (deep only)
 
 - If `depth == shallow`, skip to step 7.
-- Read `../\_research-shared/agent-prompts.md` §Skeptic.
+- Read `./agent-prompts.md` §Skeptic.
 - Dispatch one Agent call with researcher outputs + verifier JSON.
 - Parse challenges JSON.
 
@@ -83,13 +83,13 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 
 ### 7. Vault index
 
-- Read `../\_research-shared/agent-prompts.md` §Vault-indexer.
+- Read `./agent-prompts.md` §Vault-indexer.
 - Dispatch the Vault-indexer Agent. It reads the vault's `CLAUDE.md` + `index.md` and returns a page map.
 - This runs inside a subagent so the main session never loads vault context directly.
 
 ### 8. Synthesize
 
-- Read `../\_research-shared/agent-prompts.md` §Synthesizer — vault mode.
+- Read `./agent-prompts.md` §Synthesizer — vault mode.
 - Also fetch the template page `pages/idle-game-design.md` content via the Vault-indexer (or a follow-up subagent read) and pass it in as `template_page_content`.
 - Filter researcher claims: include only those where at least one cited URL got an OK verdict from the Verifier AND the claim survived the Skeptic (in deep mode).
 - Dispatch the Synthesizer Agent with the filtered content and vault page map.
@@ -152,7 +152,7 @@ Tell the user:
 
 ## Partial Failure Handling
 
-Follow `../\_research-shared/verification-rubric.md` exactly:
+Follow `./verification-rubric.md` exactly:
 - Per-claim failure matrix for verifier verdicts
 - Skeptic-challenge matrix for challenge severity
 - Global abort conditions
@@ -160,8 +160,8 @@ Follow `../\_research-shared/verification-rubric.md` exactly:
 
 ## Files This Skill Reads
 
-- `C:\Users\noelh\.claude\skills\_research-shared\agent-prompts.md` — all subagent prompts
-- `C:\Users\noelh\.claude\skills\_research-shared\verification-rubric.md` — rubric + failure matrix
+- `C:\Users\noelh\.claude\skills\deep-research\agent-prompts.md` — all subagent prompts
+- `C:\Users\noelh\.claude\skills\deep-research\verification-rubric.md` — rubric + failure matrix
 
 Read them with the Read tool at workflow start. Do not cache across runs.
 
