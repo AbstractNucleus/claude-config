@@ -1,6 +1,6 @@
 # Research Agent Prompts
 
-Shared subagent prompts used by `/deep-research` (vault mode) and `/research-here` (local mode). Not a skill itself — has no SKILL.md.
+Subagent prompts used by `/deep-research` (vault mode). Companion reference for `SKILL.md` — not a skill itself.
 
 Every prompt below is a complete, ready-to-dispatch prompt. Substitute `{{placeholders}}` with runtime values.
 
@@ -8,7 +8,7 @@ Every prompt below is a complete, ready-to-dispatch prompt. Substitute `{{placeh
 
 ## Decomposer
 
-Use once per run. Same for both modes.
+Use once per run.
 
 ```
 You decompose a research topic into 5–7 orthogonal, collectively-exhaustive
@@ -44,7 +44,7 @@ Rules:
 
 ## Researcher
 
-Dispatch one per angle, in parallel. Same for both modes.
+Dispatch one per angle, in parallel.
 
 ```
 You are researching ONE angle of a larger topic. Your output will be
@@ -99,7 +99,7 @@ Return format (markdown):
 
 ## Verifier
 
-Dispatch once after all researchers complete. Same for both modes.
+Dispatch once after all researchers complete.
 
 ```
 You verify research output by WebFetching every cited URL and checking that
@@ -218,7 +218,7 @@ If CONFIRMED-COUNTER: the skeptic was right — the claim should be
 
 ## Vault-indexer
 
-Vault mode only. Dispatch once before the synthesizer.
+Dispatch once before the synthesizer.
 
 ```
 Working directory: C:\Users\noelh\Documents\vault
@@ -245,7 +245,7 @@ Do NOT read pages/ beyond the index. Do not edit anything.
 
 ## Synthesizer — vault mode
 
-Used by `/deep-research`. Writes a synthesis page that matches the vault template.
+Writes a synthesis page that matches the vault template.
 
 ```
 You write ONE synthesis page in the style of {{template_page_slug}}.
@@ -296,64 +296,4 @@ Hard rules from the vault convention:
 Do NOT write a Sources section in the body.
 Do NOT include any claim that isn't in verified_claims.
 Do NOT copy the template's content — match its SHAPE, not its topic.
-```
-
----
-
-## Synthesizer — local mode
-
-Used by `/research-here`. Writes project documentation, not a vault page.
-
-```
-You write ONE project-local research document (README.md). This is NOT a
-vault page. Keep inline URLs. No wikilinks. No front-matter.
-
-Input:
-- topic: {{topic}}
-- verified_claims: {{filtered_research}}
-- skeptic_open_questions: {{open_questions_or_empty}}
-- today: {{YYYY-MM-DD}}
-- cwd: {{cwd}}
-
-Shape:
-
-# Research: {{topic}}
-_Compiled {{today}} via /research-here_
-
-<One to three sentences framing the topic and what questions this document
-answers.>
-
-## <Thesis-named section 1>
-**<distilled principle in bold>**
-
-<Prose with inline citations> [source](URL).
-
-## <Thesis-named section N>
-...
-
-## Red flags
-
-- <anti-pattern> — [source](URL)
-
-## Open questions
-
-- <question the evidence couldn't resolve>
-
-## Sources
-
-| # | URL | Authority | Verdict |
-|---|-----|-----------|---------|
-| 1 | https://... | primary | OK |
-| 2 | https://... | secondary | WEAK — source only tangentially supports claim |
-
-Rules:
-- Inline URLs allowed as markdown links: [text](URL). Do NOT use [src:...] shape.
-- No wikilinks — this is project docs.
-- No front-matter.
-- Every URL that appears in the body also appears in the Sources table with
-  its authority tier and verifier verdict.
-- WEAK-but-kept claims must be marked inline: "<claim> ([weak source](URL))".
-- Do NOT include any claim that isn't in verified_claims.
-- Match the thesis-section shape; don't default to "Overview / Details /
-  Conclusion" boilerplate.
 ```
