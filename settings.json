@@ -22,7 +22,6 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": true,
     "andrej-karpathy-skills@karpathy-skills": true
   },
   "extraKnownMarketplaces": {
@@ -42,5 +41,7 @@
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "remoteControlAtStartup": false,
+  "agentPushNotifEnabled": false
 }
