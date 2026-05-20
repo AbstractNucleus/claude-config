@@ -5,3 +5,7 @@ Git repo that syncs Claude Code config across machines. `settings.json` and `ski
 **Config split:** `settings.json` holds shared config (permissions, hooks, `enabledPlugins`, `extraKnownMarketplaces`). `settings.local.json` holds per-machine overrides (OS-specific paths, local env vars, dev endpoints) and is gitignored. The local file is merged on top at load time, so local entries win — put anything machine-specific there, never in `settings.json`.
 
 **Committing here:** never stage `.credentials.json`, `config.json`, or `settings.local.json`. Before any commit, scan `git status` for tokens or unexpected new files; `.gitignore` may lag new Claude Code additions. If a secret is ever committed, rotate it before rewriting history.
+
+# Coding guidelines
+
+Always apply the `andrej-karpathy-skills:karpathy-guidelines` skill when writing, reviewing, or refactoring code in any project. Keep changes surgical, surface assumptions, avoid overcomplication, and define verifiable success criteria. Invoke the skill via the Skill tool at the start of any non-trivial coding task so its full guidance is in context.

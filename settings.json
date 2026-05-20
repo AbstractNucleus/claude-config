@@ -1,5 +1,9 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(ssh bserver:*)",
+      "Bash(scp:*)"
+    ],
     "defaultMode": "auto"
   },
   "model": "opus[1m]",
@@ -22,7 +26,9 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "andrej-karpathy-skills@karpathy-skills": true
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "frontend-design@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "karpathy-skills": {
@@ -34,14 +40,16 @@
   },
   "effortLevel": "xhigh",
   "autoUpdatesChannel": "latest",
+  "tui": "default",
   "voice": {
     "enabled": true,
     "mode": "hold"
   },
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
+  "remoteControlAtStartup": false,
+  "agentPushNotifEnabled": false,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": false
+  "inputNeededNotifEnabled": true
 }
