@@ -1,6 +1,6 @@
 ---
 name: improve
-description: Generate an improvement, addition, or fix for the current project, propose it once, then either grill the user on it or implement it. Use when the user invokes /improve, asks "what's next", "polish this", or wants the project moved forward. With an argument (e.g. /improve add dark mode), researches and implements that specific idea instead of generating one.
+description: Generate an improvement, addition, or fix for the current project, propose it once, then either grill the user on it or implement it. Use when the user invokes /improve, asks "what's next", "polish this", or wants the project moved forward. With an argument (e.g. /improve add dark mode), researches that specific idea instead of generating one, then proposes it.
 ---
 
 # /improve
@@ -23,7 +23,9 @@ One proposal per invocation. Then commit (with grilling) or go.
 `/improve <idea>`, research the idea, then propose how you'd ship it.
 
 1. Read the code paths the idea touches. Look at how similar features are already done in this project.
-2. If it's a library/framework choice or an unfamiliar pattern, do one focused web search for current best practice. Don't go deeper unless the user is around.
+2. If it's a library/framework choice or an unfamiliar pattern, cap at one WebSearch call. Skip entirely if the pattern is already used elsewhere in the codebase.
+
+Avoid proposing: framework/dependency upgrades, broad refactors, "add tests" as the whole proposal, anything requiring decisions only the user can make.
 
 ## The proposal (both modes)
 
@@ -37,7 +39,7 @@ Write ONE message with this exact shape, then end the turn:
 ```
 
 Do not ask "shall I proceed?". The next user message decides:
-- "grill me" (or similar) → drop into a stress-testing interview about the proposal before writing any code.
+- "grill me" (or similar) → invoke the `grill-me` skill via the Skill tool, using this proposal as the plan to grill.
 - anything else, or no specific direction → implement.
 
 ## Implementing
@@ -48,7 +50,7 @@ Surgical changes only. No drive-by refactors. No speculative abstractions. No fe
 
 ## Self-review before reporting done
 
-Read your own diff (`git diff`) and check:
+Read your own diff (e.g. `git diff` if the project uses git) and check:
 
 - [ ] Karpathy guidelines respected (surgical, no overcomplication, assumptions surfaced).
 - [ ] Project coding standards respected.

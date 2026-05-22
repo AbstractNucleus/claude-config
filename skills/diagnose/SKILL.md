@@ -1,6 +1,6 @@
 ---
 name: diagnose
-description: Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when user says "diagnose this" / "debug this", reports a bug, says something is broken/throwing/failing, or describes a performance regression.
+description: Disciplined diagnosis loop for hard bugs and performance regressions. Build feedback loop → reproduce → hypothesise → instrument → fix → cleanup. Use when the user cannot already see the cause — the bug is intermittent, a perf regression, they've tried the obvious fix, or they explicitly want a disciplined debug pass. Skip for one-line fixes, syntax errors, or bugs with an obvious culprit.
 ---
 
 # Diagnose
@@ -26,7 +26,7 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 7. **Property / fuzz loop.** If the bug is "sometimes wrong output", run 1000 random inputs and look for the failure mode.
 8. **Bisection harness.** If the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so you can `git bisect run` it.
 9. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
-10. **HITL bash script.** Last resort. If a human must click, drive _them_ with `scripts/hitl-loop.template.sh` so the loop is still structured. Captured output feeds back to you.
+10. **HITL bash script.** Last resort. If a human must click, drive _them_ with `scripts/hitl-loop.template.sh` so the loop is still structured. Captured output feeds back to you. (Bash-only; on Windows, invoke via the Bash tool or WSL/Git-Bash.)
 
 Build the right feedback loop, and the bug is 90% fixed.
 
@@ -98,7 +98,7 @@ A correct seam is one where the test exercises the **real bug pattern** as it oc
 
 If a correct seam exists:
 
-1. Turn the minimised repro into a failing test at that seam.
+1. Turn the failing repro into a failing test at that seam.
 2. Watch it fail.
 3. Apply the fix.
 4. Watch it pass.

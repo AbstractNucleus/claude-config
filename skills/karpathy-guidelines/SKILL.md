@@ -1,23 +1,20 @@
 ---
 name: karpathy-guidelines
-description: Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
+description: Behavioral guidelines to reduce common LLM coding mistakes. Use at the start of non-trivial coding tasks (new features, refactors, multi-file changes, bug fixes with unclear root cause) — not for one-line edits or mechanical changes.
 ---
 
 # Karpathy Guidelines
 
 Behavioral guidelines to reduce common LLM coding mistakes, derived from [Andrej Karpathy's observations](https://x.com/karpathy/status/2015883857489522876) on LLM coding pitfalls.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
-
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
 Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them, don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+- State your assumptions explicitly. If something is unclear, stop and name what's confusing before asking.
+- If multiple interpretations exist, present them — don't pick silently.
+- If the user's approach has a known pitfall, name it before implementing.
 
 ## 2. Simplicity First
 
@@ -29,7 +26,7 @@ Before implementing:
 - No error handling for impossible scenarios.
 - If you write 200 lines and it could be 50, rewrite it.
 
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+Before finalizing: roughly count the lines you added. If it's more than ~2x what the task obviously needs, delete and retry.
 
 ## 3. Surgical Changes
 
@@ -56,19 +53,6 @@ Transform tasks into verifiable goals:
 - "Fix the bug" → "Write a test that reproduces it, then make it pass"
 - "Refactor X" → "Ensure tests pass before and after"
 
-For multi-step tasks, state a brief plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
+For tasks with 3+ distinct steps, state a brief plan with a verify check per step. Skip the plan for two-step tasks — it's ceremony.
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
-
----
-
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
-
----
-
-_Adapted from Andrej Karpathy's principles ([original plugin](https://github.com/forrestchang/andrej-karpathy-skills), MIT-licensed). Kept here as a self-owned, shareable skill._

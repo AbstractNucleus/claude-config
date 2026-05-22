@@ -8,9 +8,9 @@ Companion reference for `/research-here`. Used by the Verifier and Synthesizer a
 |---|---|---|---|---|---|
 | URL resolves (HTTP 2xx/3xx) | ✅ | ✅ | ✅ | ❌ | ✅ |
 | Page content loads (not login/paywall/JS-shell) | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Page topic matches citation context | ✅ | ✅ | ✅ |, | ❌ |
-| Page content supports the claim | ✅ | partial / tangential | ❌ contradicts |, |, |
-| Authority tag matches reality | ✅ | may be inflated |, |, |, |
+| Page topic matches citation context | ✅ | ✅ | ✅ | n/a | ❌ |
+| Page content supports the claim | ✅ | partial / tangential | ❌ contradicts | n/a | n/a |
+| Authority tag matches reality | ✅ | may be inflated | n/a | n/a | n/a |
 
 ## Authority ladder
 

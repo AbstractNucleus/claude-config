@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Find deepening opportunities in a codebase, informed by the domain language in CONTEXT.md and the decisions in docs/adr/. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable.
+description: Find deepening opportunities in a codebase. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable. Will read `CONTEXT.md` and `docs/adr/` if they exist; creates `CONTEXT.md` lazily otherwise.
 ---
 
 # Improve Codebase Architecture
@@ -9,18 +9,9 @@ Surface architectural friction and propose **deepening opportunities**, refactor
 
 ## Glossary
 
-Use these terms exactly in every suggestion. Consistent language is the point, don't drift into "component," "service," "API," or "boundary." Full definitions in [LANGUAGE.md](LANGUAGE.md).
+Use the vocabulary in [LANGUAGE.md](LANGUAGE.md) exactly in every suggestion — read it before producing candidates. Consistent language is the point; don't drift into "component," "service," "API," or "boundary."
 
-- **Module**, anything with an interface and an implementation (function, class, package, slice).
-- **Interface**, everything a caller must know to use the module: types, invariants, error modes, ordering, config. Not just the type signature.
-- **Implementation**, the code inside.
-- **Depth**, leverage at the interface: a lot of behaviour behind a small interface. **Deep** = high leverage. **Shallow** = interface nearly as complex as the implementation.
-- **Seam**, where an interface lives; a place behaviour can be altered without editing in place. (Use this, not "boundary.")
-- **Adapter**, a concrete thing satisfying an interface at a seam.
-- **Leverage**, what callers get from depth.
-- **Locality**, what maintainers get from depth: change, bugs, knowledge concentrated in one place.
-
-Key principles (see [LANGUAGE.md](LANGUAGE.md) for the full list):
+Key principles (see [LANGUAGE.md](LANGUAGE.md) for definitions):
 
 - **Deletion test**: imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
 - **The interface is the test surface.**
@@ -34,7 +25,7 @@ This skill is _informed_ by the project's domain model. The domain language give
 
 Read the project's domain glossary and any ADRs in the area you're touching first.
 
-Then use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't follow rigid heuristics, explore organically and note where you experience friction:
+Then dispatch an exploration sub-agent (use the Task/Agent tool with whatever exploration agent type is available, or use Grep/Glob/Read directly if no specialized agent exists) to walk the codebase. Don't follow rigid heuristics, explore organically and note where you experience friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow**, interface nearly as complex as the implementation?
@@ -62,6 +53,8 @@ Do NOT propose interfaces yet. Ask the user: "Which of these would you like to e
 ### 3. Grilling loop
 
 Once the user picks a candidate, drop into a grilling conversation. Walk the design tree with them, constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
+
+**Exit when** the user picks a final design or explicitly asks you to start implementing. Don't loop indefinitely.
 
 Side effects happen inline as decisions crystallize:
 

@@ -1,11 +1,15 @@
 ---
 name: to-prd
-description: Turn the current conversation context into a PRD and publish it to the project issue tracker. Use when user wants to create a PRD from the current context.
+description: Turn the current conversation context into a PRD and publish it to the project issue tracker. Use when the user invokes /to-prd, says "create a PRD", "PRD this", "write up a product brief", "draft a spec", or similar.
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a PRD. Do NOT interview the user, just synthesize what you already know.
+This skill takes the current conversation context and codebase understanding and produces a PRD. Don't re-interview the user — synthesize from context, then confirm the module breakdown and test scope in a single pass (see step 2).
 
-Before publishing, confirm with the user which issue tracker the project uses (GitHub, Linear, Jira, etc.) and what label vocabulary applies, pick reasonable defaults from the repo's existing labels if any. If no tracker is configured, write the PRD to a local `docs/prd-<slug>.md` file and tell the user.
+If conversation context is thin (no meaningful problem description), stop and ask the user to describe the problem before drafting.
+
+## Tracker detection
+
+Before publishing, detect the project's issue tracker by inspecting the repo (`.github/`, `linear.toml`, `.jira/`, etc.). If unambiguous, proceed and tell the user which one. If ambiguous or none found, ask once. Fallback: write the PRD to a local `docs/prd-<slug>.md` file and tell the user.
 
 ## Process
 
@@ -15,9 +19,9 @@ Before publishing, confirm with the user which issue tracker the project uses (G
 
 A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
 
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
+Present the proposed module breakdown and test scope to the user in a single confirmation message. Don't interview them step by step — show the whole sketch and let them redirect.
 
-3. Write the PRD using the template below, then publish it to the project issue tracker. Apply the `needs-triage` triage label so it enters the normal triage flow.
+3. Write the PRD using the template below, then publish it to the project issue tracker. Apply the project's triage/intake label if one exists (e.g. `needs-triage`, `triage`, `inbox`); otherwise skip.
 
 <prd-template>
 
@@ -39,7 +43,7 @@ A LONG, numbered list of user stories. Each user story should be in the format o
 1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
 </user-story-example>
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+This list should be comprehensive within scope — cover all aspects of the feature that context supports. Don't invent stories beyond what the conversation has established.
 
 ## Implementation Decisions
 

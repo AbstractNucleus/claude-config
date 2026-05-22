@@ -1,6 +1,6 @@
 ---
 name: research-here
-description: Use when the user wants structured research written into the current working directory, invoked via "/research-here [topic]", "research this", "do a deep dive", or any unqualified research request. If no topic is given, defaults to researching the project's current work (what's on the current branch, recent commits, in-progress files, open TODOs). Decomposes into 5–7 parallel angles, dispatches researcher subagents with strict URL-per-claim citations, verifies every URL by WebFetch, runs a skeptic to challenge weak claims, and synthesizes into ./research/YYYY-MM-DD-<topic>/. Opens a PR if cwd is a git repo.
+description: Use when the user wants structured research written into the current project, invoked via "/research-here [topic]", "research this", "deep dive in this repo", or any unqualified research request. If no topic is given, infers it from the current branch, recent commits, in-progress files, and TODOs. Decomposes into parallel angles, verifies URL-per-claim citations via WebFetch, optionally challenges with a skeptic, and writes to ./research/.
 argument-hint: [shallow] [topic]
 ---
 
@@ -27,13 +27,14 @@ Default mode (no topic given): infer the topic from the project's current work, 
 - `<topic>`, deep mode. Include skeptic + re-research on `high`/`medium` challenges.
 - (no topic), deep mode, topic inferred from current project work.
 
-If the first positional arg is exactly `shallow`, treat the rest as the topic. Otherwise the whole arg string is the topic. If empty, infer from project state (see step 1).
+If the first positional arg is exactly `shallow` AND the remaining string is non-empty, treat the rest as the topic. If the arg is just `shallow` with nothing after, treat the whole arg as the topic and use deep mode (don't strip "shallow" from a topic like "shallow water rendering"). Otherwise the whole arg string is the topic. If empty, infer from project state (see step 1).
 
 ## Safety Posture
 
 - If cwd has no git repo, still run, just skip the branch/push/PR steps and report local paths at the end. (Topic inference falls back to in-progress files + TODOs when there's no git history.)
 - Create the output folder even if it means creating `./research/`. Do not ask first, it's a documentation folder, creation is safe.
 - Do NOT modify any code in the repo. Only write files inside `./research/YYYY-MM-DD-<topic-slug>/`.
+- Expect a full deep run to take several minutes: dispatching 5–7 parallel Researchers plus a Verifier that WebFetches every URL is slow. Don't abort on slow sub-agents.
 
 ## Workflow
 
@@ -53,26 +54,26 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 
 ### 2. Decompose
 
-- Read `./agent-prompts.md` §Decomposer.
+- Read `agent-prompts.md` from this skill's folder, §Decomposer.
 - Dispatch one Agent call with the Decomposer prompt and user's topic.
 - Validate: 5–7 angles, non-empty `boundaries`.
 
 ### 3. Research (parallel)
 
-- Read `./agent-prompts.md` §Researcher.
+- Read `agent-prompts.md` from this skill's folder, §Researcher.
 - Dispatch ONE Agent call per angle, all in a single message (parallel).
 - Collect outputs by angle id.
 
 ### 4. Verify
 
-- Read `./agent-prompts.md` §Verifier and `./verification-rubric.md`.
+- Read `agent-prompts.md` from this skill's folder, §Verifier and `verification-rubric.md`.
 - Dispatch one Verifier Agent call. Parse JSON.
 - Check global abort conditions, if triggered, stop and report. Do not synthesize.
 
 ### 5. Skeptic (deep only)
 
 - If `depth == shallow`, skip to step 7.
-- Read `./agent-prompts.md` §Skeptic.
+- Read `agent-prompts.md` from this skill's folder, §Skeptic.
 - Dispatch one Skeptic Agent call. Parse challenges JSON.
 
 ### 6. Re-research (deep only)
@@ -83,7 +84,7 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 
 ### 7. Synthesize
 
-- Read `./agent-prompts.md` §Synthesizer, local mode.
+- Read `agent-prompts.md` from this skill's folder, §Synthesizer, local mode.
 - Filter claims: only those with an OK verdict that survived the Skeptic (in deep mode).
 - Dispatch the Synthesizer Agent. It writes a `README.md`-shaped document with inline URLs and a Sources table.
 
@@ -113,6 +114,8 @@ git commit -m "research: {topic}"
 git push -u origin research/{topic_slug}-{today}
 gh pr create --title "research: {topic}" --body "<summary>"
 ```
+
+If `gh` isn't installed or authenticated, stop after the push and tell the user the branch is ready for them to open the PR manually.
 
 PR body:
 
@@ -145,24 +148,16 @@ Tell the user:
 
 ## Partial Failure Handling
 
-Follow `./verification-rubric.md` exactly:
+Follow `verification-rubric.md` exactly:
 - Per-claim failure matrix
 - Skeptic-challenge matrix
 - Global abort conditions
 - Non-aborting degradation (add `## Angles we could not verify` section to README.md)
 
-## Files This Skill Reads
-
-- `./agent-prompts.md` (in this skill's folder)
-- `./verification-rubric.md` (in this skill's folder)
-
-Read with the Read tool at workflow start.
-
 ## Common Mistakes
 
 - **Asking for a topic when one can be inferred.** If the branch name, recent commits, or in-progress diff makes the topic obvious, just announce the inferred topic and proceed. Only ask when project state genuinely surfaces nothing.
-- **Modifying repo code.** This skill only writes under `./research/`. Never edit source files, if research surfaces a fix, mention it in the README and stop there.
+- **Modifying repo code.** This skill only writes under `./research/`. Never edit source files; if research surfaces a fix, mention it in the README and stop there.
 - **Creating a PR against `main` without a branch.** Always cut a `research/...` branch first.
 - **Skipping the PR step when cwd is a git repo but the remote is missing.** Commit and push to local branch anyway; tell the user the PR step needs a remote.
 - **Silently dropping failed angles.** Always surface them in `## Angles we could not verify`.
-- **Assuming the researcher already wrote good URLs.** The Verifier is non-negotiable, even in shallow mode.

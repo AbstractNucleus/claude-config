@@ -19,19 +19,20 @@ Deploy the current project to one of the user's hosts. Single flow; auto-detects
 
 ## Plan first, execute second
 
-Write the plan and show it to the user before SSHing:
+Write the plan and show it to the user before SSHing. Pull every host-specific path, command, and routing convention from `HOSTS.md` — don't invent. If `HOSTS.md` describes more than one binding pattern (e.g. public-facing vs tailnet-only / internal-only), explicitly state which you're using and why; cert chain, snippet includes, and listening address often differ between them.
 
 ```
 Project:    <name>
 Containers: <list, or "none">
 Ports:      <internal port → public path/host>
-Nginx host: <e.g. aserver>  →  proxy_pass to <docker host>:<port>
-Docker host: <e.g. bserver>
-Hostname:   <if applicable>
+Public hostname: <e.g. app.example.com — or "tailnet-only">
+Binding:    public | tailnet-only | internal-only  (per HOSTS.md)
+Nginx host: <from HOSTS.md>  →  proxy_pass to <docker host>:<port>
+Docker host: <from HOSTS.md>
 
 Steps:
 1. ssh <docker host>, clone or pull repo
-2. ssh <docker host>, build + (re)start containers
+2. ssh <docker host>, build + (re)start containers (exact command from HOSTS.md)
 3. ssh <nginx host>, drop/update site config + reload (only if routing changed)
 ```
 
@@ -54,21 +55,22 @@ Do not blow away nginx config that is already correct. Do not stop unrelated con
 
 ## First-deploy flow
 
-1. SSH docker host. Clone the repo into the path specified by `HOSTS.md` (e.g. `~/repos/<project>/`).
-2. Build and start: `docker compose up -d --build` (or the build/run command for the project's stack).
+1. SSH docker host. Clone the repo into the path specified by `HOSTS.md`.
+2. Build and start using the **exact build/run command from `HOSTS.md`** for this host (typically `docker compose -p <project> up -d --build` or similar — convention varies, don't guess).
 3. Wait for healthcheck or `docker compose ps` to show containers up.
-4. SSH nginx host. Drop `sites-available/<project>.conf` with `proxy_pass` to `<docker host>:<port>`. Symlink to `sites-enabled/`.
+4. SSH nginx host. Drop `sites-available/<project>.conf` following the routing convention in `HOSTS.md` (cert chain, snippet includes, and listening address depend on whether this is a public or tailnet/internal-only binding). Symlink to `sites-enabled/`.
 5. `sudo nginx -t` → `sudo systemctl reload nginx`.
 6. Curl the public URL from the user's machine, verify HTTP 200 (or the expected status).
 
 ## Update flow
 
 1. SSH docker host.
-2. `cd <project path> && git pull`, show the diff to the user.
-3. `docker compose down && docker compose up -d --build`, or `-p <project>` if multiple stacks share the host.
-4. Wait for containers to be healthy.
-5. Touch nginx **only** if ports or hostnames changed in this update.
-6. Curl the public URL, verify.
+2. `cd <project path>`. Capture the current SHA so the user can revert later if needed: `git rev-parse HEAD`. Report it.
+3. `git pull`, show the diff to the user.
+4. Use the **exact build/run command from `HOSTS.md`** to restart the stack.
+5. Wait for containers to be healthy.
+6. Touch nginx **only** if ports or hostnames changed in this update.
+7. Curl the public URL, verify.
 
 ## Safety rules
 
@@ -83,4 +85,5 @@ Report:
 - Hosts touched.
 - Container status (`docker compose ps` output, abridged).
 - Public URL and the curl result.
-- One check the user can run themselves to confirm it's live.
+- For updates: the pre-pull SHA so the user can `git reset --hard <sha>` and redeploy to revert.
+- The exact `curl` or browser URL the user can run themselves to confirm it's live.

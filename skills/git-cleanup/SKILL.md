@@ -1,6 +1,6 @@
 ---
 name: git-cleanup
-description: Use when the user wants to tidy up a git repo's local branches, invoked via "/git-cleanup", "clean up branches", "prune branches", or after merging PRs and wanting to remove stale local refs. Prunes remote-tracking refs, deletes merged local branches, and flags shared branches before deleting.
+description: Use when the user wants to tidy up a git repo's local branches, invoked via "/git-cleanup", "clean up branches", "prune branches", after a PR is squash-merged, or any time they want to remove stale local refs. Prunes remote-tracking refs, deletes merged local branches, and flags shared branches before deleting.
 ---
 
 # Git Cleanup
@@ -27,6 +27,8 @@ Works in any repo, safe by default. Destructive actions are confirmed before run
 - **Never run `git clean -fd`** as part of this flow, that targets working-tree files, not branches.
 
 ## Procedure
+
+Run all shell snippets via the Bash tool — they assume POSIX shell. PowerShell won't reliably handle `awk`, `sed`, single-quoted format strings, or `$(...)` substitution.
 
 ### 1. Fetch and prune
 
@@ -60,10 +62,10 @@ git branch -vv | awk '/: gone]/{print $1}'
 
 ### 3. Flag shared branches
 
-Before deleting any candidate, check whether it contains commits by other authors:
+Before deleting any candidate, check whether it contains commits by other authors. Substitute `<default>` with the default branch you derived in step 2 (`main`, `master`, `develop`, `trunk` — varies by repo):
 
 ```bash
-git log --format='%ae' main..<branch> | sort -u
+git log --format='%ae' <default>..<branch> | sort -u
 ```
 
 If the output contains any author other than the current user (`git config user.email`), **stop and ask** before deleting that specific branch. Call it out by name in the confirmation prompt.
@@ -86,11 +88,10 @@ Don't batch `-D` across a set. Confirm per branch, or get blanket approval for a
 ### 5. Post-prune check
 
 ```bash
-git remote prune origin
 git branch -vv
 ```
 
-(Usually a no-op after step 1, but confirms the final state.)
+Confirms the final state.
 
 ### 6. Report
 
@@ -110,8 +111,7 @@ Print a short summary:
 | List merged branches | `git branch --merged <default>` | Safe candidates for `-d` |
 | Safe delete | `git branch -d <branch>` | Refuses if unmerged |
 | Force delete | `git branch -D <branch>` | Only after per-branch confirmation |
-| Check authors on a branch | `git log --format='%ae' main..<branch> \| sort -u` | Shared if >1 author |
-| Prune remote-tracking only | `git remote prune origin` | Subset of `fetch --prune` |
+| Check authors on a branch | `git log --format='%ae' <default>..<branch> \| sort -u` | Shared if >1 author |
 
 ## Common Mistakes
 
@@ -121,3 +121,4 @@ Print a short summary:
 - **Deleting `main`/`master`/`develop` or the current branch.** Hard-exclude these from any candidate list.
 - **Silently deleting branches with collaborator commits.** Always flag and ask first.
 - **Running `git push --prune` or `git push --delete` as part of cleanup.** Out of scope unless the user explicitly requested remote deletion.
+- **Hardcoding `main` in author checks.** Use the default branch derived from `git symbolic-ref refs/remotes/origin/HEAD`, since the project may use `master`, `develop`, or `trunk`.

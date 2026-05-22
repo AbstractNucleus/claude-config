@@ -1,17 +1,17 @@
 ---
 name: frontend-design
-description: Build distinctive, production-grade frontend interfaces. Use when the user asks to build, design, or refactor web components, pages, or applications, including styling, layout, interaction, animation, or any UI-shaped change. Bias toward original, polished output that avoids generic AI-template aesthetics.
+description: Build distinctive, production-grade frontend interfaces. Use when building, redesigning, or substantially restyling components, pages, or applications, including animation, interaction, or motion work. Skip for one-line tweaks, single-color swaps, or "how do I center a div"-style questions. Bias toward original, polished output that avoids generic AI-template aesthetics.
 ---
 
 # Frontend Design
-
-Starter skill for UI work. Owned and edited by you. Develop it as you ship.
 
 ## Setup
 
 This skill reads `PREFERENCES.md` in its folder for your default stack and design tastes. The file is gitignored (per-machine); a committed `PREFERENCES.example.md` is the template.
 
-If `PREFERENCES.md` is missing or empty, fall back to the inline defaults in [Working principles](#working-principles) below. First time on a new machine, copy `PREFERENCES.example.md` to `PREFERENCES.md` and fill it in. You may also ask the user once at task start: "Anything specific I should know about stack or style before I start?", but only on substantial UI tasks, not small tweaks.
+If `PREFERENCES.md` is missing or empty, fall back to the inline defaults in [Working principles](#working-principles) below. First time on a new machine, copy `PREFERENCES.example.md` to `PREFERENCES.md` and fill it in.
+
+**If `PREFERENCES.md` references external files** (e.g. a design repo path like `D:\code\design\`), read those files before designing — they hold the real design system. Don't skim PREFERENCES.md and skip them.
 
 ## When to Use
 
@@ -33,13 +33,8 @@ These apply unless `PREFERENCES.md` overrides them.
 
 ## Workflow
 
-1. Read `PREFERENCES.md` (if present).
+1. Read `PREFERENCES.md` (if present), then any external files it references.
 2. Read project-local style files (`CLAUDE.md`, `AGENTS.md`, design tokens, existing components), match what's there before introducing new patterns.
-3. For substantial work, propose direction in 3-5 sentences before writing code. Get a nod.
+3. For new pages, new component families, or work touching >100 lines of new UI, propose direction in 3-5 sentences before writing code. For smaller in-place changes, just implement.
 4. Implement with the principles above.
 5. Verify in a browser when feasible.
-
-## Notes
-
-- This is a starter. Replace these principles with your real opinions as you find them.
-- For one-off questions ("how do I center a div"), skip the workflow, just answer.

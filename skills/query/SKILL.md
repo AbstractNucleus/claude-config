@@ -1,15 +1,11 @@
 ---
 name: query
-description: Use when the user wants to ask a question against their Obsidian vault from any project, invoked via "/query <question>", "ask the vault", "look this up in my notes", or "what does my vault say about X". Spawns a sub-agent that loads the vault's own CLAUDE.md and runs the vault's `query` flow, so the main session never ingests vault context.
+description: Use when the user wants to ask a question against their Obsidian vault from any project, invoked via "/query <question>", "ask the vault", "ask my vault", "search my wiki", "look this up in my notes", or "what does my vault say about X". Spawns a sub-agent that loads the vault's own CLAUDE.md and runs the vault's `query` flow, so the main session never ingests vault context.
 ---
 
 # Query
 
-## Overview
-
-Ask a question against the user's Obsidian vault from **any** project. This skill exists to keep the main session's context window clean: it dispatches a sub-agent that loads the vault's `CLAUDE.md`, reads `index.md`, searches `pages/` (and `sources/` if needed), and returns only the synthesized answer plus citations.
-
-The vault has its own `query` command defined in its `CLAUDE.md`, this skill is the *remote entry point* for that command from outside the vault directory.
+Ask a question against the user's Obsidian vault from **any** project. Delegates to a sub-agent so the vault's `CLAUDE.md`, `index.md`, and page contents stay in the sub-agent's window — only the synthesized answer plus citations return to the main session.
 
 ## Setup
 
@@ -30,26 +26,18 @@ The rest of this document refers to the vault as `{vault_path}`. Substitute the 
 - User wants a fact, citation, or synthesis grounded in their own notes
 - Out-of-scope: capturing new content, editing pages, running `ingest`/`promote`/`lint` (those happen inside the vault)
 
-## Why a Sub-Agent
-
-Token optimization. The vault's `CLAUDE.md`, `index.md`, and any page contents the agent reads can be large. If the main session loads them, every subsequent turn pays that token cost. By delegating to a sub-agent:
-
-- The sub-agent's full context (vault rules, index, page reads) stays in *its* window.
-- Only the final answer (a few hundred tokens with citations) returns to the main session.
-- The main session's working context for the user's actual project is preserved.
-
 ## Workflow
 
 1. Resolve `{vault_path}` per the Setup section above.
 2. Capture the user's question verbatim from `/query <...>` or surrounding chat.
 3. If the question is empty or genuinely ambiguous, ask **one** clarifying question. Otherwise proceed.
-4. Dispatch a sub-agent (Agent tool, `subagent_type: general-purpose`) with the prompt template below, substituting `{vault_path}` and `{{question}}`.
-5. Relay the sub-agent's answer to the user. Preserve its `[[wikilinks]]` and `sources/...` citations as markdown links where useful, but do not add commentary the agent didn't produce.
-6. If the sub-agent reports "not in vault," tell the user plainly, do not guess from outside knowledge.
+4. Dispatch a sub-agent via the Task tool with the prompt template below, substituting `{vault_path}` and `{{question}}`. Match the length of the answer to the question.
+5. Relay the sub-agent's answer to the user verbatim, preserving its `[[wikilinks]]` and `sources/...` citations. If the sub-agent reports "not in vault," say so plainly — don't guess from outside knowledge.
+6. If a **Suggested filing** appeared, ask the user once whether to file it. Don't auto-file.
 
 ## Sub-Agent Prompt Template
 
-Pass this to the Agent tool. Substitute `{vault_path}` (from VAULT.md) and `{{question}}` (the user's question).
+Pass this to the Task tool. Substitute `{vault_path}` (from VAULT.md) and `{{question}}` (the user's question).
 
 ```
 You are running the vault's `query` command on behalf of a main session that is NOT in the vault directory. Your job: answer the question using only the user's Obsidian vault, then return a concise answer with citations.
@@ -85,14 +73,6 @@ Hard rules:
 - If you read a page, cite it. If you didn't read it, don't cite it.
 ```
 
-## Returning the Answer
-
-When the sub-agent returns:
-
-- Show the **Answer** block as the primary response.
-- Show the **Citations** as a short list so the user can click through (use markdown link form `[[page-name]]` or `vault/sources/file.md` paths).
-- If a **Suggested filing** appeared, ask the user once: "Want me to file this as a new page / fold into `[[existing-page]]`?" If yes, the *user* re-enters the vault directory or you spawn a follow-up sub-agent to do the write, do not auto-file from here.
-
 ## Examples
 
 ### Simple lookup
@@ -116,16 +96,6 @@ User: `/query summarize everything I've captured about Karpathy`
 → Sub-agent returns answer + citations + a **Suggested filing** line proposing a `[[karpathy]]` page consolidating scattered references.
 
 → Show the answer. Ask the user once whether to file.
-
-## Quick Reference
-
-| Scenario | Action |
-|----------|--------|
-| `/query <question>` | Dispatch sub-agent with question verbatim |
-| Empty `/query` | Ask once: "What do you want to look up?" |
-| `VAULT.md` missing/invalid | Ask user for path, save, continue |
-| Sub-agent says "not in vault" | Relay plainly, don't guess |
-| Answer is reusable | Surface the suggested-filing line, ask once |
 
 ## What NOT to do
 

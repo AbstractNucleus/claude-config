@@ -14,17 +14,19 @@ The `/deploy` skill reads this file verbatim to plan deploys. Be concrete. Use t
 - **Lives here:**
   - nginx config: `/etc/nginx/sites-available/`, enabled via symlink in `/etc/nginx/sites-enabled/`.
   - TLS certs: managed by `certbot`, auto-renewed.
-- **Routing convention:** one `sites-available/<project>.conf` per app, `proxy_pass http://bserver:<port>;`.
+- **Routing convention:** one `sites-available/<project>.conf` per app, `proxy_pass http://<docker-host>:<port>;`.
 - **Reload command:** `sudo nginx -t && sudo systemctl reload nginx`.
+
+> **Note for real setups:** if you have more than one binding pattern (e.g. public vhost with Let's Encrypt vs. tailnet-only vhost on a different cert chain, or different `listen` directives), spell each pattern out as its own labeled block — the deploy skill picks between them by name. The single-pattern example above is only enough for one-shape deployments.
 
 ## bserver
 
 - **Role:** Docker host. Runs all application containers.
 - **SSH:** `ssh noel@bserver`
 - **Lives here:**
-  - Repos: `/home/noel/repos/<project>/`
+  - Repos: `/home/<user>/repos/<project>/`
   - Containers: `docker compose`, one stack per project, scoped with `-p <project>`.
-- **Convention:** `cd /home/noel/repos/<project> && git pull && docker compose -p <project> up -d --build`.
+- **Convention:** `cd /home/<user>/repos/<project> && git pull && docker compose -p <project> up -d --build`.
 - **Ports:** Each app picks a unique internal port. When adding a new app, also update the corresponding nginx config on `aserver`.
 
 ---

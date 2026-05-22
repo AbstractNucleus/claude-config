@@ -1,6 +1,6 @@
 ---
 name: note
-description: Use when the user wants to capture content into their Obsidian vault from any project, invoked via "/note", "note this", "save to vault", or by passing inline text, a file path, or a URL with capture intent. Routes to inbox (own thoughts) or sources (external material).
+description: Use when the user wants to capture content into their Obsidian vault from any project, invoked via "/note", "note this", "save to vault", or by passing inline text, a file path, or a URL with capture intent. Routes to inbox (own thoughts) or sources (external material). Capture only — does not edit existing notes, answer vault queries, or run ingest/promote.
 ---
 
 # Note
@@ -19,7 +19,7 @@ At the start of every run:
 
 1. Try to read `VAULT.md` from this skill's folder. Strip blank lines and lines starting with `#`. The first remaining line is the vault path. If it points to a directory that exists, use it as `{vault_path}` and proceed.
 2. If `VAULT.md` is missing, empty (after stripping comments), or points to a non-existent directory: ask the user **once**, "Where's your Obsidian vault? Give me the absolute path." Write the answer to `VAULT.md` as a single line and continue. If the user says they don't have a vault, tell them this skill needs one and stop.
-3. The path may use either platform separator. Use it verbatim, don't try to normalize across OSes.
+3. The path may use either platform separator. Pass it unchanged to file tools — don't convert `\` to `/` or vice versa.
 
 The rest of this document refers to the vault as `{vault_path}`. Substitute the real path wherever you see it.
 
@@ -104,33 +104,31 @@ Binary files (PDF, images) are copied as-is, no frontmatter.
 2. Parse intent: inline text vs file path vs URL. Check for `inbox:` / `sources:` override.
 3. Check for multiple subjects (see **Splitting** below). If present, plan one file per subject.
 4. Pick destination per the routing table.
-5. Generate filename(s) per convention. Use the local date/time (not UTC). Same `HHMM` is fine across split files, slug differentiates.
-6. Write/copy the file(s) under `{vault_path}/inbox/` or `{vault_path}/sources/`. For URLs, fetch with WebFetch and save the markdown content.
-7. Confirm with the user, list every absolute path written.
-8. **Stop.** Do not auto-ingest, do not edit `index.md` or `log.md`, do not touch `pages/`.
+5. Generate filename(s) per convention. Use the date from the `currentDate` context plus the current wall time (not UTC); if unavailable, ask once. Same `HHMM` is fine across split files, slug differentiates.
+6. **Check for filename collision.** If the target path already exists, append `-2`, `-3`, etc. to the slug until unique. Never overwrite an existing file.
+7. Write/copy the file(s) under `{vault_path}/inbox/` or `{vault_path}/sources/`. For URLs, fetch with WebFetch and save the markdown content.
+   - **If WebFetch fails or returns non-content** (login wall, captcha, 404, error): tell the user, save a stub `.md` with the URL and the error in frontmatter+body, and stop. Don't retry silently.
+8. Confirm with the user, list every absolute path written.
+9. **Stop.** Do not auto-ingest, do not edit `index.md` or `log.md`, do not touch `pages/`.
 
 ## Splitting multi-subject notes
 
-When the user's input clearly covers **multiple distinct subjects of the same kind**, write one file per subject instead of one combined file. The vault's wiki layer wants one entity per page, splitting at capture time makes the later `promote` step trivial.
+When the user's input clearly covers **multiple distinct subjects of the same kind**, write one file per subject. The vault's wiki layer wants one entity per page; splitting at capture time makes later `promote` trivial.
 
-**Strong signals to split** (default: split, no need to ask):
+**Split when** (no need to ask):
 - Plural collective prefix: `/note projects: ...`, `/note papers: ...`, `/note ideas on X and Y`
-- The body has multiple top-level headings (`# Foo`, `# Bar`) each naming a distinct subject
+- The body has multiple top-level headings each naming a distinct subject
 - Bulleted/numbered list where each item is itself a multi-sentence subject
-- "Three things:" / "two projects:" / explicit count followed by a list
+- Explicit count: "three things:", "two projects:", followed by a list
 
 **Don't split** when:
-- The input is a single thought that happens to mention several names ("X reminded me of Y because of Z")
-- It's a quote or excerpt, quotes stay whole
-- It's a single file or URL, even if it covers multiple topics, the artifact is one file
+- A single thought happens to mention several names ("X reminded me of Y because of Z")
+- It's a quote or excerpt — quotes stay whole
+- It's a single file or URL — the artifact is one file
 
-**Ambiguous?** Default to one note. The user can re-run `/note` per subject if they wanted splits.
+**Ambiguous?** Default to one note. The user can re-run per subject.
 
-**Per-split filename:** each gets its own slug derived from that subject. Same date and time across the set is fine.
-
-**Per-split content:** preserve the user's text *for that subject* verbatim. You may strip the prefix (`projects:`) and the heading that names the subject if it's redundant with the filename, but never rewrite the substance.
-
-**Per-split `ref`:** if a path or URL appears alongside a subject, pull it into that split file's `ref:` frontmatter so a future `ingest` can crawl the location for richer context.
+**Per-split:** each file gets its own slug; preserve the user's text *for that subject* verbatim (you may strip the collective prefix and the redundant subject heading); if a path/URL appears alongside a subject, pull it into that file's `ref:` frontmatter (see the `ref` section above).
 
 ## Examples
 
