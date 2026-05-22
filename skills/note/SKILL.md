@@ -7,9 +7,21 @@ description: Use when the user wants to capture content into their Obsidian vaul
 
 ## Overview
 
-Capture content into the user's Obsidian vault at `C:\Users\noelh\Documents\vault`. This is the *capture* step only — it drops content into `inbox/` or `sources/`. Processing into the curated wiki happens later via the vault's own `ingest` / `promote` commands (defined in the vault's `CLAUDE.md`).
+Capture content into the user's Obsidian vault. This is the *capture* step only — it drops content into `inbox/` or `sources/` inside the vault. Processing into the curated wiki happens later via the vault's own `ingest` / `promote` commands (defined in the vault's `CLAUDE.md`).
 
 This skill works from any project. It does not require the user's current working directory to be the vault.
+
+## Setup — resolving the vault path
+
+This skill needs to know where the vault is. The path is stored in `VAULT.md` inside this skill's folder (gitignored, per-machine).
+
+At the start of every run:
+
+1. Try to read `VAULT.md` from this skill's folder. Strip blank lines and lines starting with `#`. The first remaining line is the vault path. If it points to a directory that exists, use it as `{vault_path}` and proceed.
+2. If `VAULT.md` is missing, empty (after stripping comments), or points to a non-existent directory: ask the user **once** — "Where's your Obsidian vault? Give me the absolute path." Write the answer to `VAULT.md` as a single line and continue. If the user says they don't have a vault, tell them this skill needs one and stop.
+3. The path may use either platform separator. Use it verbatim — don't try to normalize across OSes.
+
+The rest of this document refers to the vault as `{vault_path}`. Substitute the real path wherever you see it.
 
 ## When to Use
 
@@ -79,22 +91,23 @@ Binary files (PDF, images) are copied as-is — no frontmatter.
 - The note is *about* a project, repo, file, or website that exists somewhere
 
 **Detection patterns** (be liberal — pull anything path- or URL-shaped from the subject line):
-- `admin_management at D:\code\ai_projects\admin_management`
-- `admin_management — D:\code\ai_projects\admin_management`
-- `admin_management (D:\code\ai_projects\admin_management)`
-- `admin_management https://github.com/x/admin_management`
+- `<name> at <path>`
+- `<name> — <path>`
+- `<name> (<path>)`
+- `<name> <url>`
 
 `ref` accepts a single path/URL string. If the user gives multiple, pick the most authoritative (repo > local clone > URL) and put the rest in the body.
 
 ## Workflow
 
-1. Parse intent: inline text vs file path vs URL. Check for `inbox:` / `sources:` override.
-2. Check for multiple subjects (see **Splitting** below). If present, plan one file per subject.
-3. Pick destination per the routing table.
-4. Generate filename(s) per convention. Use the local date/time (not UTC). Same `HHMM` is fine across split files — slug differentiates.
-5. Write/copy the file(s). For URLs, fetch with WebFetch and save the markdown content.
-6. Confirm with the user — list every absolute path written.
-7. **Stop.** Do not auto-ingest, do not edit `index.md` or `log.md`, do not touch `pages/`.
+1. Resolve `{vault_path}` per the Setup section above.
+2. Parse intent: inline text vs file path vs URL. Check for `inbox:` / `sources:` override.
+3. Check for multiple subjects (see **Splitting** below). If present, plan one file per subject.
+4. Pick destination per the routing table.
+5. Generate filename(s) per convention. Use the local date/time (not UTC). Same `HHMM` is fine across split files — slug differentiates.
+6. Write/copy the file(s) under `{vault_path}/inbox/` or `{vault_path}/sources/`. For URLs, fetch with WebFetch and save the markdown content.
+7. Confirm with the user — list every absolute path written.
+8. **Stop.** Do not auto-ingest, do not edit `index.md` or `log.md`, do not touch `pages/`.
 
 ## Splitting multi-subject notes
 
@@ -117,14 +130,14 @@ When the user's input clearly covers **multiple distinct subjects of the same ki
 
 **Per-split content:** preserve the user's text *for that subject* verbatim. You may strip the prefix (`projects:`) and the heading that names the subject if it's redundant with the filename — but never rewrite the substance.
 
-**Per-split `ref`:** if a path or URL appears alongside a subject (e.g. `admin_management at D:\code\...`), pull it into that split file's `ref:` frontmatter so a future `ingest` can crawl the location for richer context.
+**Per-split `ref`:** if a path or URL appears alongside a subject, pull it into that split file's `ref:` frontmatter so a future `ingest` can crawl the location for richer context.
 
 ## Examples
 
 ### Inline thought
 User: `/note I should read more on linear attention — feels like the next bottleneck after KV cache tricks`
 
-→ Write `C:\Users\noelh\Documents\vault\inbox\2026-04-13-1432-linear-attention-next-bottleneck.md`:
+→ Write `{vault_path}/inbox/2026-04-13-1432-linear-attention-next-bottleneck.md`:
 ```markdown
 ---
 captured: 2026-04-13 14:32
@@ -137,63 +150,43 @@ I should read more on linear attention — feels like the next bottleneck after 
 ### File capture
 User: `/note D:\downloads\paper.pdf`
 
-→ Copy to `C:\Users\noelh\Documents\vault\sources\2026-04-13-paper.pdf`. Confirm path.
+→ Copy to `{vault_path}/sources/2026-04-13-paper.pdf`. Confirm path.
 
 ### URL capture
 User: `/note https://example.com/article-on-rope`
 
-→ Fetch URL, save markdown to `C:\Users\noelh\Documents\vault\sources\2026-04-13-article-on-rope.md` with frontmatter containing the original URL.
+→ Fetch URL, save markdown to `{vault_path}/sources/2026-04-13-article-on-rope.md` with frontmatter containing the original URL.
 
 ### Override
 User: `/note sources: "Talent hits a target no one else can hit; genius hits a target no one else can see." — Schopenhauer`
 
-→ Write to `sources/2026-04-13-schopenhauer-genius-quote.md`.
+→ Write to `{vault_path}/sources/2026-04-13-schopenhauer-genius-quote.md`.
 
 ### Multi-subject split with refs
 User:
 ```
 /note projects:
-- admin_management at D:\code\ai_projects\admin_management — FastAPI dashboard for Minecraft servers
-- evolve-ui at D:\code\ai_projects\evolve-ui — Tailwind/Jinja design refactor of the same app
-- tasker at https://github.com/noelh/tasker — CLI todo tool I use across machines
+- proj-alpha at D:\code\proj-alpha — short description of project A
+- proj-beta at D:\code\proj-beta — short description of project B
+- proj-gamma at https://github.com/<user>/proj-gamma — short description of project C
 ```
 
 → Three files in `inbox/`, same timestamp, distinct slugs, each with its own `ref:`:
 
-`2026-04-13-1505-admin-management.md`:
+`2026-04-13-1505-proj-alpha.md`:
 ```markdown
 ---
 captured: 2026-04-13 15:05
 from: chat
-ref: D:\code\ai_projects\admin_management
+ref: D:\code\proj-alpha
 ---
 
-FastAPI dashboard for Minecraft servers
+short description of project A
 ```
 
-`2026-04-13-1505-evolve-ui.md`:
-```markdown
----
-captured: 2026-04-13 15:05
-from: chat
-ref: D:\code\ai_projects\evolve-ui
----
+(Two more files in the same shape, one per remaining subject.)
 
-Tailwind/Jinja design refactor of the same app
-```
-
-`2026-04-13-1505-tasker.md`:
-```markdown
----
-captured: 2026-04-13 15:05
-from: chat
-ref: https://github.com/noelh/tasker
----
-
-CLI todo tool I use across machines
-```
-
-The path was extracted from each subject line into `ref:` so the vault's later `promote` can crawl those locations for richer context. Confirm by listing all three paths.
+The path was extracted from each subject line into `ref:` so the vault's later `promote` can crawl those locations for richer context. Confirm by listing all paths written.
 
 ## Quick Reference
 
@@ -205,7 +198,7 @@ The path was extracted from each subject line into `ref:` so the vault's later `
 | Prefix `inbox:` or `sources:` | Force destination |
 | Plural prefix (`projects:`, `papers:`) or multiple top-level headings | Split → one file per subject |
 | Path doesn't exist | Tell user, don't guess |
-| Vault directory missing | Tell user, don't auto-create |
+| `VAULT.md` missing/invalid | Ask user for path, save, continue |
 
 ## What NOT to do
 
@@ -215,9 +208,3 @@ The path was extracted from each subject line into `ref:` so the vault's later `
 - **Don't ask 5 clarifying questions** — pick a sensible default per the routing table and tell the user what you did. One question max if routing is genuinely ambiguous.
 - **Don't summarize or rewrite the user's text** when capturing to inbox — preserve it verbatim. The user wrote it, that's the artifact.
 - **Don't capture without showing the path** — always confirm where you wrote.
-
-## Vault Path
-
-Hardcoded: `C:\Users\noelh\Documents\vault`
-
-If the vault path ever moves, update this skill.

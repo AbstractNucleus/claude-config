@@ -7,7 +7,7 @@ description: Break a plan, spec, or PRD into independently-grabbable issues on t
 
 Break a plan into independently-grabbable issues using vertical slices (tracer bullets).
 
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
+Before creating issues, confirm with the user which issue tracker the project uses (GitHub, Linear, Jira, etc.) and what label vocabulary applies — read the repo's existing labels first and reuse them. If no tracker is configured, stop and ask.
 
 ## Process
 

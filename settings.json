@@ -26,17 +26,9 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "andrej-karpathy-skills@karpathy-skills": true,
-    "frontend-design@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "karpathy-skills": {
-      "source": {
-        "source": "github",
-        "repo": "forrestchang/andrej-karpathy-skills"
-      }
-    }
+    "andrej-karpathy-skills@karpathy-skills": false,
+    "frontend-design@claude-plugins-official": false,
+    "claude-code-setup@claude-plugins-official": false
   },
   "effortLevel": "xhigh",
   "autoUpdatesChannel": "latest",

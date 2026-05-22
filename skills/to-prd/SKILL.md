@@ -5,7 +5,7 @@ description: Turn the current conversation context into a PRD and publish it to 
 
 This skill takes the current conversation context and codebase understanding and produces a PRD. Do NOT interview the user — just synthesize what you already know.
 
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
+Before publishing, confirm with the user which issue tracker the project uses (GitHub, Linear, Jira, etc.) and what label vocabulary applies — pick reasonable defaults from the repo's existing labels if any. If no tracker is configured, write the PRD to a local `docs/prd-<slug>.md` file and tell the user.
 
 ## Process
 

@@ -216,13 +216,13 @@ If CONFIRMED-COUNTER: the skeptic was right — the claim should be
 
 ---
 
-## Synthesizer — local mode
+## Synthesizer
 
-Writes project documentation, not a vault page.
+Writes a project-local research document.
 
 ```
-You write ONE project-local research document (README.md). This is NOT a
-vault page. Keep inline URLs. No wikilinks. No front-matter.
+You write ONE project-local research document (README.md). Use inline URL
+citations as standard markdown links.
 
 Input:
 - topic: {{topic}}
@@ -263,9 +263,7 @@ answers.>
 | 2 | https://... | secondary | WEAK — source only tangentially supports claim |
 
 Rules:
-- Inline URLs allowed as markdown links: [text](URL). Do NOT use [src:...] shape.
-- No wikilinks — this is project docs.
-- No front-matter.
+- Inline URLs as standard markdown links: [text](URL). Do NOT use [src:...] shape.
 - Every URL that appears in the body also appears in the Sources table with
   its authority tier and verifier verdict.
 - WEAK-but-kept claims must be marked inline: "<claim> ([weak source](URL))".

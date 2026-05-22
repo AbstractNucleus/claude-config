@@ -68,3 +68,10 @@ projects/
 Thumbs.db
 *.swp
 *~
+
+# --- Per-machine skill data ---
+# Each skill that needs machine-specific config keeps it in its own folder.
+# The .example.md template is committed; the real file is per-machine.
+skills/deploy/HOSTS.md
+skills/note/VAULT.md
+skills/query/VAULT.md

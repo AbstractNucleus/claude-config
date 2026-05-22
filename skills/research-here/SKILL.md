@@ -1,37 +1,37 @@
 ---
 name: research-here
-description: Use when the user wants structured research written into the current working directory rather than their Obsidian vault — invoked via "/research-here <topic>", "research this here", "do a deep dive in this repo". Decomposes into 5–7 parallel angles, dispatches researcher subagents with strict URL-per-claim citations, verifies every URL by WebFetch, runs a skeptic to challenge weak claims, and synthesizes into ./research/YYYY-MM-DD-<topic>/. Opens a PR if cwd is a git repo.
-argument-hint: [shallow] <topic>
+description: Use when the user wants structured research written into the current working directory — invoked via "/research-here [topic]", "research this", "do a deep dive", or any unqualified research request. If no topic is given, defaults to researching the project's current work (what's on the current branch, recent commits, in-progress files, open TODOs). Decomposes into 5–7 parallel angles, dispatches researcher subagents with strict URL-per-claim citations, verifies every URL by WebFetch, runs a skeptic to challenge weak claims, and synthesizes into ./research/YYYY-MM-DD-<topic>/. Opens a PR if cwd is a git repo.
+argument-hint: [shallow] [topic]
 ---
 
 # Research Here — Local Mode
 
 ## Overview
 
-Same research pipeline as `/deep-research`, but writes project documentation into the current working directory instead of the user's vault. Output is plain markdown with inline URL citations and a Sources table — not vault-template pages with wikilinks.
+Project-scoped research pipeline. Writes plain markdown with inline URL citations and a Sources table into `./research/` in the current working directory.
 
-Use this when the research is project-scoped (belongs with the code) rather than wiki-scoped (general knowledge).
+Default mode (no topic given): infer the topic from the project's current work — the current branch name, recent commits, in-progress changes, open TODOs, or any active issue context. Use this when the user just says "research this" without specifying what.
 
 ## When to Use
 
-- User types `/research-here <topic>` from inside a project
-- User says "research this here", "research this for the project", "deep dive in this repo"
-- User explicitly does NOT want output in their vault
-- Out-of-scope: wiki-scoped research (use `/deep-research`), quick factual lookups (use `/query`), own-thought capture (use `/note`)
+- User types `/research-here [topic]` from inside a project
+- User says "research this", "research this here", "deep dive in this repo", "look into this"
+- User asks for research without specifying the destination — this is the default research skill
+- Out-of-scope: quick factual lookups; capturing user's own thoughts as a note.
 
 ## Argument Parsing
 
-`argument-hint: [shallow] <topic>`
+`argument-hint: [shallow] [topic]`
 
 - `shallow <topic>` — skip the skeptic + re-research loop.
-- `<topic>` — default (deep). Include skeptic + re-research on `high`/`medium` challenges.
+- `<topic>` — deep mode. Include skeptic + re-research on `high`/`medium` challenges.
+- (no topic) — deep mode, topic inferred from current project work.
 
-If the first positional arg is exactly `shallow`, treat the rest as the topic. Otherwise the whole arg string is the topic.
+If the first positional arg is exactly `shallow`, treat the rest as the topic. Otherwise the whole arg string is the topic. If empty, infer from project state (see step 1).
 
 ## Safety Posture
 
-- If cwd is the vault directory (`C:\Users\noelh\Documents\vault`), **refuse**. Suggest `/deep-research` instead. Do not write vault-style pages through this skill.
-- If cwd has no git repo, still run — just skip the branch/push/PR steps and report local paths at the end.
+- If cwd has no git repo, still run — just skip the branch/push/PR steps and report local paths at the end. (Topic inference falls back to in-progress files + TODOs when there's no git history.)
 - Create the output folder even if it means creating `./research/`. Do not ask first — it's a documentation folder, creation is safe.
 - Do NOT modify any code in the repo. Only write files inside `./research/YYYY-MM-DD-<topic-slug>/`.
 
@@ -40,9 +40,14 @@ If the first positional arg is exactly `shallow`, treat the rest as the topic. O
 ### 1. Parse args + preflight
 
 - Extract `depth ∈ {shallow, deep}` (default `deep`) and `topic`.
-- If `topic` is empty, ask once: "What topic do you want researched?"
+- **If `topic` is empty, infer it from the project's current work**:
+  - Read current branch name (`git branch --show-current`) — strip `feat/`, `fix/`, `wip/` prefixes; if descriptive, use it.
+  - Read last 5 commit subjects (`git log -5 --format=%s`) — look for a coherent theme.
+  - Check `git status` for in-progress files; scan them and `git diff` for what's being changed.
+  - Look for TODO/FIXME/XXX comments in modified files, and any open issue tag in the branch name.
+  - Pick the most specific signal — branch name beats commit log beats diff scan. Surface the inferred topic to the user in one sentence before proceeding ("Inferred topic: <topic>. Researching now."). Do not block on confirmation — auto mode.
+  - If nothing usable surfaces (clean tree, generic branch, no TODOs), ask once: "I couldn't infer a topic from the project state. What do you want researched?"
 - Compute `topic_slug` (kebab-case ≤ 60 chars), `today = YYYY-MM-DD`, `stamp = YYYY-MM-DD-HHMM`.
-- Resolve cwd. If cwd is the vault path, refuse and suggest `/deep-research`.
 - Check `git rev-parse --is-inside-work-tree` to decide whether PR steps apply.
 - Compute `out_dir = <cwd>/research/{today}-{topic_slug}`.
 
@@ -148,14 +153,14 @@ Follow `./verification-rubric.md` exactly:
 
 ## Files This Skill Reads
 
-- `C:\Users\noelh\.claude\skills\research-here\agent-prompts.md`
-- `C:\Users\noelh\.claude\skills\research-here\verification-rubric.md`
+- `./agent-prompts.md` (in this skill's folder)
+- `./verification-rubric.md` (in this skill's folder)
 
 Read with the Read tool at workflow start.
 
 ## Common Mistakes
 
-- **Running in the vault directory.** Refuse and redirect to `/deep-research`. Don't produce vault-shaped pages via this skill.
+- **Asking for a topic when one can be inferred.** If the branch name, recent commits, or in-progress diff makes the topic obvious, just announce the inferred topic and proceed. Only ask when project state genuinely surfaces nothing.
 - **Modifying repo code.** This skill only writes under `./research/`. Never edit source files — if research surfaces a fix, mention it in the README and stop there.
 - **Creating a PR against `main` without a branch.** Always cut a `research/...` branch first.
 - **Skipping the PR step when cwd is a git repo but the remote is missing.** Commit and push to local branch anyway; tell the user the PR step needs a remote.

@@ -8,3 +8,5 @@ Interview me relentlessly about every aspect of this plan until we reach a share
 Ask the questions one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
+
+The decisions we make should always be checked against the project's coding standards and the codebase. If a question can be answered by looking at the code, look at the code. If the code doesn't answer it, look at the documentation. If the documentation doesn't answer it, ask the user.

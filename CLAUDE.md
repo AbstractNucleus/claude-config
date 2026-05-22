@@ -8,4 +8,10 @@ Git repo that syncs Claude Code config across machines. `settings.json` and `ski
 
 # Coding guidelines
 
-Always apply the `andrej-karpathy-skills:karpathy-guidelines` skill when writing, reviewing, or refactoring code in any project. Keep changes surgical, surface assumptions, avoid overcomplication, and define verifiable success criteria. Invoke the skill via the Skill tool at the start of any non-trivial coding task so its full guidance is in context.
+Always apply the `karpathy-guidelines` skill when writing, reviewing, or refactoring code in any project. Keep changes surgical, surface assumptions, avoid overcomplication, and define verifiable success criteria. Invoke the skill via the Skill tool at the start of any non-trivial coding task so its full guidance is in context.
+
+# Self-improving skills
+
+After invoking any skill from `~/.claude/skills/`, take a moment to ask: did anything block me, mislead me, or feel like bloat? If yes, edit the skill's `SKILL.md` directly — fix the unclear step, cut dead prose, sharpen the trigger. Keep skills lean; cut when in doubt. If a fix isn't obvious, surface the proposed change to the user before editing.
+
+Only self-edit skills under `~/.claude/skills/`. Do not edit Anthropic-shipped or plugin-namespaced skills (`anthropic-skills:*`, etc.) — flag improvement ideas to the user instead.
