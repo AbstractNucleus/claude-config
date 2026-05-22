@@ -45,6 +45,7 @@ sessions/
 shell-snapshots/
 tasks/
 .buddy-reroll.json
+.last-cleanup
 project-config.json
 security_warnings_state_*.json
 mcp-needs-auth-cache.json
