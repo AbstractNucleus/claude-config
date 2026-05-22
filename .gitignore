@@ -49,6 +49,14 @@ project-config.json
 security_warnings_state_*.json
 mcp-needs-auth-cache.json
 
+# --- Daemon & background jobs ---
+# Supervisor process state (PID, status, worker roster, named pipes) and
+# per-job working directories. Rewritten every time the daemon starts.
+daemon.lock
+daemon.status.json
+daemon/
+jobs/
+
 # --- Plugins: ignore entirely ---
 # All of plugins/ is runtime state, caches, marketplace clones, and
 # per-machine manifests that get rewritten on load. Plugin enablement
