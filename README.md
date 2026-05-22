@@ -1,81 +1,65 @@
-# ~/.claude/ — synced Claude Code setup
+# Claude Code skills
 
-This repo is the portable part of `~/.claude/`. Clone it on a new machine, and your skills, agents, and plugin list come with you. Auto-memory (per-project memory files Claude writes) is intentionally *not* synced — each machine builds its own as you work.
+A small set of [Claude Code](https://claude.com/claude-code) skills I use day-to-day. Each one lives in its own folder under [`skills/`](skills/) and is self-contained. You can copy any single skill into your own `~/.claude/skills/` without taking the rest.
 
-## What's tracked
+## What's in here
 
-| Path | What it is |
-|------|------------|
-| `settings.json` | Shared settings: permissions, hooks, model prefs, env vars |
-| `skills/` | User-authored and installed skills (each skill self-contained in its own folder, including any design notes or support files) |
-| `CLAUDE.md` | Instructions Claude loads every session |
+### Building and shipping
 
-Plugin configuration source-of-truth lives entirely in `settings.json`: `enabledPlugins` names which plugins to run, and `extraKnownMarketplaces` (plus the built-in `claude-plugins-official` marketplace) names where to fetch them from. Claude Code handles installation on first run.
+- [`diagnose`](skills/diagnose/) runs a disciplined bug-diagnosis loop: reproduce, minimise, hypothesise, instrument, fix, regression-test.
+- [`improve`](skills/improve/) picks one worthwhile change for the current project, proposes it, then either grills you on it or implements it.
+- [`improve-codebase-architecture`](skills/improve-codebase-architecture/) finds deepening opportunities and walks the design tree with you.
+- [`karpathy-guidelines`](skills/karpathy-guidelines/) is a short set of coding behavioral rules to reduce common LLM mistakes, adapted from Andrej Karpathy's principles.
+- [`frontend-design`](skills/frontend-design/) biases UI work toward distinctive, polished output. Reads your stack preferences from a local `PREFERENCES.md`.
+- [`deploy`](skills/deploy/) ships the current project over SSH to hosts you list in `HOSTS.md`.
 
-## What's NOT tracked (and why)
+### Planning
 
-- **`.credentials.json`, `config.json`** — contain OAuth tokens and API keys.
-- **`settings.local.json`** — **machine-specific overrides** (see below).
-- **`plugins/`** — all runtime state: installed plugin content, cloned marketplace repos, and per-machine manifests (`installed_plugins.json`, `known_marketplaces.json`) that get rewritten on load with machine-specific paths and timestamps. Source-of-truth for enablement lives in `settings.json → enabledPlugins`; for marketplace sources in `settings.json → extraKnownMarketplaces`.
-- **`projects/`** — all per-project state (conversation history, todos, shell-snapshots, and auto-memory). Claude Code manages this directory; none of it benefits from syncing across machines.
-- **Logs, caches, telemetry** — `bash-commands.log`, `cost-tracker.log`, `history.jsonl`, `cache/`, `paste-cache/`, `ide/`, `sessions/`, `telemetry/`, `usage-data/`, etc.
-- **Stale backups** — `settings.json.bak`, `*.backup.*/`, `backups/`.
+- [`grill-me`](skills/grill-me/) interviews you about a plan or design until every branch of the decision tree is resolved.
+- [`to-prd`](skills/to-prd/) turns the current conversation into a PRD on your issue tracker.
+- [`to-issues`](skills/to-issues/) breaks a plan into independently-grabbable tickets using tracer-bullet slices.
+- [`write-a-skill`](skills/write-a-skill/) is the meta skill for authoring more skills.
 
-## Machine-specific overrides
+### Research and notes
 
-**Rule:** `settings.json` is shared across machines. Put anything that differs per-machine into `settings.local.json` (gitignored).
+- [`research-here`](skills/research-here/) does multi-angle research with URL-per-claim citations and writes the synthesis into `./research/` in the current repo.
+- [`note`](skills/note/) captures content into an Obsidian vault. The vault path lives in a gitignored `VAULT.md` per machine.
+- [`query`](skills/query/) asks a question against the same vault via a sub-agent, so the main session never loads vault context.
 
-Examples of what belongs in `settings.local.json`:
-- Windows-only permissions (e.g. `powershell.exe` commands)
-- macOS- or Linux-only shell paths
-- Local-only env vars (e.g. an API endpoint pointing at a dev server)
-- Per-machine model overrides
+### Workflow
 
-Claude Code merges `settings.local.json` on top of `settings.json` at load time, so local entries win. Never commit `settings.local.json`.
+- [`git-cleanup`](skills/git-cleanup/) prunes merged local branches.
+- [`caveman`](skills/caveman/) switches into an ultra-compressed communication mode (≈75% fewer tokens).
 
-## Setting up a new machine
+## Using a single skill
 
-```bash
-# 1. Clone into ~/.claude/ (must be empty or non-existent first)
-git clone git@github.com:<you>/claude-config.git ~/.claude
-
-# 2. Log in (recreates .credentials.json)
-claude                   # prompts for auth on first run
-
-# 3. Install plugins
-#    Claude Code will install each plugin listed in
-#    settings.json → enabledPlugins, fetching from marketplaces
-#    defined in settings.json → extraKnownMarketplaces (plus the
-#    built-in claude-plugins-official marketplace).
-#    If any plugin is missing, install it manually:
-#    /plugin install <name>
-
-# 4. Create your machine-specific overrides
-#    If you have OS-specific permissions or env vars, put them in:
-#    ~/.claude/settings.local.json
-```
-
-## Updating the synced setup
-
-Work in `~/.claude/` as normal — skills and settings get updated in place. When you want to sync:
+Copy any one skill folder into your own `~/.claude/skills/`:
 
 ```bash
-cd ~/.claude
-git add -A
-git status                # sanity-check nothing sensitive slipped in
-git commit -m "update: <what changed>"
-git push
+cp -r path/to/this/repo/skills/diagnose ~/.claude/skills/
 ```
 
-On your other machines:
+Restart Claude Code. The skill self-registers via its `SKILL.md` frontmatter.
+
+Skills that need a path or preference (`deploy`, `note`, `query`, `frontend-design`) will ask you for it the first time they run, and save your answer to a gitignored file in that skill's folder.
+
+## Using the whole set
 
 ```bash
-cd ~/.claude
-git pull
+git clone https://github.com/AbstractNucleus/claude-config.git ~/.claude
+claude  # authenticates on first run
 ```
 
-## Safety
+## Design notes
 
-- **Before every commit**, scan `git status` for anything that looks like a token, key, or credential. The `.gitignore` covers known locations, but new Claude Code versions may add new files.
-- The repo is **private**. Keep it that way. Skill definitions can contain project-specific context.
-- If you ever commit a secret by accident: rotate it immediately, then rewrite history (`git filter-repo` or BFG) before the next push.
+- **Standalone.** No skill calls another skill by name. You can delete or copy any folder without breaking the rest.
+- **No machine-specific values committed.** Per-machine config (vault paths, deploy hosts, design preferences) lives in gitignored files alongside each skill, with a committed `.example.md` template.
+- **No plugin dependencies.** Everything you need is in this repo. `settings.json` doesn't enable any plugins.
+
+## Credits
+
+[`karpathy-guidelines`](skills/karpathy-guidelines/) is adapted from [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) (MIT).
+
+## License
+
+MIT. See [LICENSE](LICENSE).

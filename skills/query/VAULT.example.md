@@ -1,4 +1,4 @@
-# VAULT.md template — copy this file to VAULT.md and fill it in
+# VAULT.md template, copy this file to VAULT.md and fill it in
 
 # Put the absolute path to your Obsidian vault (or any markdown notes
 # folder you want /query to read from) on a single uncommented line below.

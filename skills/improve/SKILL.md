@@ -7,20 +7,20 @@ description: Generate an improvement, addition, or fix for the current project, 
 
 One proposal per invocation. Then commit (with grilling) or go.
 
-## Mode A — no argument: pick something worth doing
+## Mode A: no argument
 
 1. **Scan the project.** In parallel where possible:
-   - `README.md`, `CLAUDE.md`, `docs/` — stated intent and constraints.
-   - `git log -20 --oneline` and `git status` — what's in flight, what's dirty.
+   - `README.md`, `CLAUDE.md`, `docs/`, stated intent and constraints.
+   - `git log -20 --oneline` and `git status`, what's in flight, what's dirty.
    - `gh issue list --limit 20` (only if `gh` is available and the repo is on GitHub).
-   - Grep for `TODO|FIXME|XXX` — known cruft the author already flagged.
+   - Grep for `TODO|FIXME|XXX`, known cruft the author already flagged.
    - Smell pass: missing tests for recent code, broken CI, dead code, repeated patterns, stale config, missing error paths at real boundaries (not internal ones).
 2. **Generate 5–10 candidate ideas internally.** Do not show the list.
-3. **Pick one** that is high-value and small enough to land in this session. If 2–3 candidates are tightly related (same flow, same file, same bug class), bundle them — otherwise ship a single one.
+3. **Pick one** that is high-value and small enough to land in this session. If 2–3 candidates are tightly related (same flow, same file, same bug class), bundle them, otherwise ship a single one.
 
-## Mode B — argument given: the user has the idea
+## Mode B: argument given
 
-`/improve <idea>` — research the idea, then propose how you'd ship it.
+`/improve <idea>`, research the idea, then propose how you'd ship it.
 
 1. Read the code paths the idea touches. Look at how similar features are already done in this project.
 2. If it's a library/framework choice or an unfamiliar pattern, do one focused web search for current best practice. Don't go deeper unless the user is around.
@@ -30,10 +30,10 @@ One proposal per invocation. Then commit (with grilling) or go.
 Write ONE message with this exact shape, then end the turn:
 
 ```
-**What** — <1–3 sentences, concrete change>
-**Why** — <user-facing impact, debt paid, or risk reduced>
-**Scope** — <files likely touched, rough size>
-**Verify** — <the one command the user will run>
+**What**, <1–3 sentences, concrete change>
+**Why**, <user-facing impact, debt paid, or risk reduced>
+**Scope**, <files likely touched, rough size>
+**Verify**, <the one command the user will run>
 ```
 
 Do not ask "shall I proceed?". The next user message decides:

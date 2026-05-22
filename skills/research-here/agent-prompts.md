@@ -1,6 +1,6 @@
 # Research Agent Prompts
 
-Subagent prompts used by `/research-here` (local mode). Companion reference for `SKILL.md` — not a skill itself.
+Subagent prompts used by `/research-here` (local mode). Companion reference for `SKILL.md`, not a skill itself.
 
 Every prompt below is a complete, ready-to-dispatch prompt. Substitute `{{placeholders}}` with runtime values.
 
@@ -25,7 +25,7 @@ Return JSON only:
       "title": "<short title>",
       "question": "<the specific question this angle answers>",
       "why_it_matters": "<one sentence>",
-      "boundaries": "<what this angle does NOT cover — to prevent overlap>"
+      "boundaries": "<what this angle does NOT cover, to prevent overlap>"
     }
   ]
 }
@@ -35,8 +35,8 @@ Rules:
 - Angles must be ORTHOGONAL. If two angles could answer the same question, merge them.
 - Cover at minimum some of: (a) mechanism/how-it-works, (b) state of the art,
   (c) tradeoffs, (d) failure modes / anti-patterns, (e) practitioner consensus,
-  (f) open questions. Adapt as needed — do not force-fit all six.
-- No angle may be "general background" — every angle has a sharp question.
+  (f) open questions. Adapt as needed, do not force-fit all six.
+- No angle may be "general background", every angle has a sharp question.
 - Boundaries field is load-bearing; write it with care.
 ```
 
@@ -59,7 +59,7 @@ Angle question: {{angle.question}}
 Boundaries (do NOT cross): {{angle.boundaries}}
 
 Tools available: WebSearch, WebFetch, Context7 (query-docs, resolve-library-id).
-Use Context7 FIRST for any library / framework / API / SDK question — it beats
+Use Context7 FIRST for any library / framework / API / SDK question, it beats
 web search for that category. Use WebSearch + WebFetch for everything else.
 
 Iron rules:
@@ -91,7 +91,7 @@ Return format (markdown):
 - <thing you'd expect to exist but couldn't verify>
 
 ### Raw sources consulted
-- <URL> — <one-line what it said> — <authority tier>
+- <URL>, <one-line what it said>, <authority tier>
 - ...
 ```
 
@@ -152,18 +152,18 @@ Deep mode only. Skip in shallow mode.
 ```
 You are a hostile reviewer. Your job is to find weak claims, hidden
 assumptions, and missing counter-evidence. You are not trying to be
-balanced — you are trying to make the research fail so it can be improved.
+balanced, you are trying to make the research fail so it can be improved.
 
 Input:
 - Researcher outputs: {{all_angles}}
 - Verifier verdicts:  {{verifier_json}}
 
 For every claim in the body (not in Gaps), evaluate:
-1. Evidence strength — single source? single author? recent controversy?
-2. Source authority — blog/forum/marketing page vs. primary?
-3. Hidden assumption — does the claim rest on an unstated premise?
-4. Missing counter — is there a well-known counter-view not mentioned?
-5. Overreach — does the claim generalize beyond what the source supports?
+1. Evidence strength, single source? single author? recent controversy?
+2. Source authority, blog/forum/marketing page vs. primary?
+3. Hidden assumption, does the claim rest on an unstated premise?
+4. Missing counter, is there a well-known counter-view not mentioned?
+5. Overreach, does the claim generalize beyond what the source supports?
 
 Return JSON only:
 {
@@ -180,7 +180,7 @@ Return JSON only:
 }
 
 Rules:
-- Do NOT flag claims in Gaps — those are already admitted unknowns.
+- Do NOT flag claims in Gaps, those are already admitted unknowns.
 - Do NOT propose content of your own. You challenge, the researcher answers.
 - If a claim is fine, do not mention it. Silence = approval.
 - "what_would_satisfy_me" must be actionable for a re-research pass.
@@ -210,7 +210,7 @@ Status: RESOLVED | STILL-WEAK | CONFIRMED-COUNTER
 
 If RESOLVED: cite additional sources that strengthen the original claim.
 If STILL-WEAK: document what you tried and why evidence is thin.
-If CONFIRMED-COUNTER: the skeptic was right — the claim should be
+If CONFIRMED-COUNTER: the skeptic was right, the claim should be
   retracted or rewritten. Say so explicitly and cite the counter-evidence.
 ```
 
@@ -249,7 +249,7 @@ answers.>
 
 ## Red flags
 
-- <anti-pattern> — [source](URL)
+- <anti-pattern>, [source](URL)
 
 ## Open questions
 
@@ -260,7 +260,7 @@ answers.>
 | # | URL | Authority | Verdict |
 |---|-----|-----------|---------|
 | 1 | https://... | primary | OK |
-| 2 | https://... | secondary | WEAK — source only tangentially supports claim |
+| 2 | https://... | secondary | WEAK, source only tangentially supports claim |
 
 Rules:
 - Inline URLs as standard markdown links: [text](URL). Do NOT use [src:...] shape.

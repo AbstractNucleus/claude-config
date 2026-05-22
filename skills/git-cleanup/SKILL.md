@@ -1,6 +1,6 @@
 ---
 name: git-cleanup
-description: Use when the user wants to tidy up a git repo's local branches — invoked via "/git-cleanup", "clean up branches", "prune branches", or after merging PRs and wanting to remove stale local refs. Prunes remote-tracking refs, deletes merged local branches, and flags shared branches before deleting.
+description: Use when the user wants to tidy up a git repo's local branches, invoked via "/git-cleanup", "clean up branches", "prune branches", or after merging PRs and wanting to remove stale local refs. Prunes remote-tracking refs, deletes merged local branches, and flags shared branches before deleting.
 ---
 
 # Git Cleanup
@@ -9,7 +9,7 @@ description: Use when the user wants to tidy up a git repo's local branches — 
 
 Tidy a git repository's local branch state. Fetches with prune, summarizes branch status, flags any branch that contains collaborator commits, deletes merged local branches, and reports what was cleaned.
 
-Works in any repo — safe by default. Destructive actions are confirmed before running.
+Works in any repo, safe by default. Destructive actions are confirmed before running.
 
 ## When to Use
 
@@ -24,7 +24,7 @@ Works in any repo — safe by default. Destructive actions are confirmed before 
 - **Never touch remote branches** on the server (no `git push --delete`) unless the user explicitly asks.
 - **Never delete the current branch, `main`, `master`, or `develop`.**
 - **Always confirm** before deleting shared branches (branches containing commits by other authors).
-- **Never run `git clean -fd`** as part of this flow — that targets working-tree files, not branches.
+- **Never run `git clean -fd`** as part of this flow, that targets working-tree files, not branches.
 
 ## Procedure
 
@@ -36,7 +36,7 @@ git branch -vv
 git branch -a --format='%(refname:short) %(upstream:track)'
 ```
 
-`--prune` removes remote-tracking refs whose upstream was deleted on the server — this covers the "remove remote-tracking refs for deleted remotes" step.
+`--prune` removes remote-tracking refs whose upstream was deleted on the server, this covers the "remove remote-tracking refs for deleted remotes" step.
 
 ### 2. Summarize
 
@@ -44,9 +44,9 @@ Report in this shape:
 
 - **Current branch:** name + ahead/behind vs upstream
 - **Recently merged (local):** branches fully merged into `main`/`master`/default
-- **Gone upstream:** branches whose upstream is `[gone]` in `branch -vv` — these are the squash-merge / PR-merged candidates
+- **Gone upstream:** branches whose upstream is `[gone]` in `branch -vv`, these are the squash-merge / PR-merged candidates
 - **Ahead/behind:** branches with unpushed work or that need a pull
-- **Stale:** local branches with no recent commit activity (optional — only flag if asked)
+- **Stale:** local branches with no recent commit activity (optional, only flag if asked)
 
 Useful one-liners:
 
@@ -70,7 +70,7 @@ If the output contains any author other than the current user (`git config user.
 
 ### 4. Delete merged local branches
 
-Use `-d` (safe delete — refuses if unmerged):
+Use `-d` (safe delete, refuses if unmerged):
 
 ```bash
 git branch -d <branch>
@@ -99,7 +99,7 @@ Print a short summary:
 - Branches deleted (list)
 - Branches skipped and why (unmerged, shared, protected)
 - Remote-tracking refs pruned
-- Any follow-ups the user should consider (e.g., "`feature/x` has unpushed commits — push or delete manually")
+- Any follow-ups the user should consider (e.g., "`feature/x` has unpushed commits, push or delete manually")
 
 ## Quick Reference
 

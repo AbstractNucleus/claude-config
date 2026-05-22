@@ -1,25 +1,25 @@
 ---
 name: note
-description: Use when the user wants to capture content into their Obsidian vault from any project — invoked via "/note", "note this", "save to vault", or by passing inline text, a file path, or a URL with capture intent. Routes to inbox (own thoughts) or sources (external material).
+description: Use when the user wants to capture content into their Obsidian vault from any project, invoked via "/note", "note this", "save to vault", or by passing inline text, a file path, or a URL with capture intent. Routes to inbox (own thoughts) or sources (external material).
 ---
 
 # Note
 
 ## Overview
 
-Capture content into the user's Obsidian vault. This is the *capture* step only — it drops content into `inbox/` or `sources/` inside the vault. Processing into the curated wiki happens later via the vault's own `ingest` / `promote` commands (defined in the vault's `CLAUDE.md`).
+Capture content into the user's Obsidian vault. This is the *capture* step only, it drops content into `inbox/` or `sources/` inside the vault. Processing into the curated wiki happens later via the vault's own `ingest` / `promote` commands (defined in the vault's `CLAUDE.md`).
 
 This skill works from any project. It does not require the user's current working directory to be the vault.
 
-## Setup — resolving the vault path
+## Setup
 
 This skill needs to know where the vault is. The path is stored in `VAULT.md` inside this skill's folder (gitignored, per-machine).
 
 At the start of every run:
 
 1. Try to read `VAULT.md` from this skill's folder. Strip blank lines and lines starting with `#`. The first remaining line is the vault path. If it points to a directory that exists, use it as `{vault_path}` and proceed.
-2. If `VAULT.md` is missing, empty (after stripping comments), or points to a non-existent directory: ask the user **once** — "Where's your Obsidian vault? Give me the absolute path." Write the answer to `VAULT.md` as a single line and continue. If the user says they don't have a vault, tell them this skill needs one and stop.
-3. The path may use either platform separator. Use it verbatim — don't try to normalize across OSes.
+2. If `VAULT.md` is missing, empty (after stripping comments), or points to a non-existent directory: ask the user **once**, "Where's your Obsidian vault? Give me the absolute path." Write the answer to `VAULT.md` as a single line and continue. If the user says they don't have a vault, tell them this skill needs one and stop.
+3. The path may use either platform separator. Use it verbatim, don't try to normalize across OSes.
 
 The rest of this document refers to the vault as `{vault_path}`. Substitute the real path wherever you see it.
 
@@ -29,13 +29,13 @@ The rest of this document refers to the vault as `{vault_path}`. Substitute the 
 - User says "note this", "save this to my vault", "capture this", "drop this in my vault"
 - User pastes text or a quote and asks to file it
 - User points to a file (PDF, markdown, transcript, screenshot) or URL and asks to save it
-- Out-of-scope: editing existing wiki pages, answering vault queries, running `ingest`/`promote`/`lint` — those happen inside the vault directory
+- Out-of-scope: editing existing wiki pages, answering vault queries, running `ingest`/`promote`/`lint`, those happen inside the vault directory
 
 ## Routing
 
 | Input | Destination | Why |
 |-------|-------------|-----|
-| Inline text from user | `inbox/` | The user wrote it — it's a fleeting thought |
+| Inline text from user | `inbox/` | The user wrote it, it's a fleeting thought |
 | File path the user references | `sources/` | External material, treat as raw input |
 | URL | `sources/` | External material |
 | Ambiguous | Ask one question, then proceed |
@@ -80,19 +80,19 @@ title: <article title if known>
 ---
 ```
 
-Binary files (PDF, images) are copied as-is — no frontmatter.
+Binary files (PDF, images) are copied as-is, no frontmatter.
 
 ### The `ref` field
 
-`ref` is the **address of the subject** the note is about — a repo path, a file path, a URL, a directory. It's optional but valuable: when the vault later runs `ingest`/`promote` on the note, the wiki workflow reads `ref` and can crawl the referenced location for more context (READMEs, file structure, package manifests) to build a richer page.
+`ref` is the **address of the subject** the note is about, a repo path, a file path, a URL, a directory. It's optional but valuable: when the vault later runs `ingest`/`promote` on the note, the wiki workflow reads `ref` and can crawl the referenced location for more context (READMEs, file structure, package manifests) to build a richer page.
 
 **When to capture a `ref`:**
 - The user mentions a path-shaped or URL-shaped token next to the subject name
 - The note is *about* a project, repo, file, or website that exists somewhere
 
-**Detection patterns** (be liberal — pull anything path- or URL-shaped from the subject line):
+**Detection patterns** (be liberal, pull anything path- or URL-shaped from the subject line):
 - `<name> at <path>`
-- `<name> — <path>`
+- `<name> - <path>`
 - `<name> (<path>)`
 - `<name> <url>`
 
@@ -104,14 +104,14 @@ Binary files (PDF, images) are copied as-is — no frontmatter.
 2. Parse intent: inline text vs file path vs URL. Check for `inbox:` / `sources:` override.
 3. Check for multiple subjects (see **Splitting** below). If present, plan one file per subject.
 4. Pick destination per the routing table.
-5. Generate filename(s) per convention. Use the local date/time (not UTC). Same `HHMM` is fine across split files — slug differentiates.
+5. Generate filename(s) per convention. Use the local date/time (not UTC). Same `HHMM` is fine across split files, slug differentiates.
 6. Write/copy the file(s) under `{vault_path}/inbox/` or `{vault_path}/sources/`. For URLs, fetch with WebFetch and save the markdown content.
-7. Confirm with the user — list every absolute path written.
+7. Confirm with the user, list every absolute path written.
 8. **Stop.** Do not auto-ingest, do not edit `index.md` or `log.md`, do not touch `pages/`.
 
 ## Splitting multi-subject notes
 
-When the user's input clearly covers **multiple distinct subjects of the same kind**, write one file per subject instead of one combined file. The vault's wiki layer wants one entity per page — splitting at capture time makes the later `promote` step trivial.
+When the user's input clearly covers **multiple distinct subjects of the same kind**, write one file per subject instead of one combined file. The vault's wiki layer wants one entity per page, splitting at capture time makes the later `promote` step trivial.
 
 **Strong signals to split** (default: split, no need to ask):
 - Plural collective prefix: `/note projects: ...`, `/note papers: ...`, `/note ideas on X and Y`
@@ -121,21 +121,21 @@ When the user's input clearly covers **multiple distinct subjects of the same ki
 
 **Don't split** when:
 - The input is a single thought that happens to mention several names ("X reminded me of Y because of Z")
-- It's a quote or excerpt — quotes stay whole
-- It's a single file or URL — even if it covers multiple topics, the artifact is one file
+- It's a quote or excerpt, quotes stay whole
+- It's a single file or URL, even if it covers multiple topics, the artifact is one file
 
 **Ambiguous?** Default to one note. The user can re-run `/note` per subject if they wanted splits.
 
 **Per-split filename:** each gets its own slug derived from that subject. Same date and time across the set is fine.
 
-**Per-split content:** preserve the user's text *for that subject* verbatim. You may strip the prefix (`projects:`) and the heading that names the subject if it's redundant with the filename — but never rewrite the substance.
+**Per-split content:** preserve the user's text *for that subject* verbatim. You may strip the prefix (`projects:`) and the heading that names the subject if it's redundant with the filename, but never rewrite the substance.
 
 **Per-split `ref`:** if a path or URL appears alongside a subject, pull it into that split file's `ref:` frontmatter so a future `ingest` can crawl the location for richer context.
 
 ## Examples
 
 ### Inline thought
-User: `/note I should read more on linear attention — feels like the next bottleneck after KV cache tricks`
+User: `/note I should read more on linear attention, feels like the next bottleneck after KV cache tricks`
 
 → Write `{vault_path}/inbox/2026-04-13-1432-linear-attention-next-bottleneck.md`:
 ```markdown
@@ -144,7 +144,7 @@ captured: 2026-04-13 14:32
 from: chat
 ---
 
-I should read more on linear attention — feels like the next bottleneck after KV cache tricks
+I should read more on linear attention, feels like the next bottleneck after KV cache tricks
 ```
 
 ### File capture
@@ -158,7 +158,7 @@ User: `/note https://example.com/article-on-rope`
 → Fetch URL, save markdown to `{vault_path}/sources/2026-04-13-article-on-rope.md` with frontmatter containing the original URL.
 
 ### Override
-User: `/note sources: "Talent hits a target no one else can hit; genius hits a target no one else can see." — Schopenhauer`
+User: `/note sources: "Talent hits a target no one else can hit; genius hits a target no one else can see." (Schopenhauer)`
 
 → Write to `{vault_path}/sources/2026-04-13-schopenhauer-genius-quote.md`.
 
@@ -166,9 +166,9 @@ User: `/note sources: "Talent hits a target no one else can hit; genius hits a t
 User:
 ```
 /note projects:
-- proj-alpha at D:\code\proj-alpha — short description of project A
-- proj-beta at D:\code\proj-beta — short description of project B
-- proj-gamma at https://github.com/<user>/proj-gamma — short description of project C
+- proj-alpha at D:\code\proj-alpha, short description of project A
+- proj-beta at D:\code\proj-beta, short description of project B
+- proj-gamma at https://github.com/<user>/proj-gamma, short description of project C
 ```
 
 → Three files in `inbox/`, same timestamp, distinct slugs, each with its own `ref:`:
@@ -193,7 +193,7 @@ The path was extracted from each subject line into `ref:` so the vault's later `
 | Scenario | Action |
 |----------|--------|
 | Plain text | inbox/ as `.md` |
-| Local file path | sources/ — copy as-is |
+| Local file path | sources/, copy as-is |
 | URL | sources/ as `.md` after WebFetch |
 | Prefix `inbox:` or `sources:` | Force destination |
 | Plural prefix (`projects:`, `papers:`) or multiple top-level headings | Split → one file per subject |
@@ -202,9 +202,9 @@ The path was extracted from each subject line into `ref:` so the vault's later `
 
 ## What NOT to do
 
-- **Don't write to `pages/`** — that's the curated wiki, owned by the vault's own `ingest`/`promote` flow.
-- **Don't run `ingest` or `promote`** — those are explicit user commands inside the vault.
-- **Don't edit `index.md` or `log.md`** — same reason.
-- **Don't ask 5 clarifying questions** — pick a sensible default per the routing table and tell the user what you did. One question max if routing is genuinely ambiguous.
-- **Don't summarize or rewrite the user's text** when capturing to inbox — preserve it verbatim. The user wrote it, that's the artifact.
-- **Don't capture without showing the path** — always confirm where you wrote.
+- **Don't write to `pages/`**, that's the curated wiki, owned by the vault's own `ingest`/`promote` flow.
+- **Don't run `ingest` or `promote`**, those are explicit user commands inside the vault.
+- **Don't edit `index.md` or `log.md`**, same reason.
+- **Don't ask 5 clarifying questions**, pick a sensible default per the routing table and tell the user what you did. One question max if routing is genuinely ambiguous.
+- **Don't summarize or rewrite the user's text** when capturing to inbox, preserve it verbatim. The user wrote it, that's the artifact.
+- **Don't capture without showing the path**, always confirm where you wrote.

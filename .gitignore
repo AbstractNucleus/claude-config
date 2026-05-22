@@ -1,5 +1,5 @@
 # ============================================================
-# ~/.claude/ sync — exclude secrets, machine-specific state,
+# ~/.claude/ sync, exclude secrets, machine-specific state,
 # caches, logs, and conversation history. Track config, skills,
 # plugin blocklist, and memory.
 # ============================================================
@@ -11,8 +11,8 @@ config.json
 *.key
 
 # --- Machine-specific overrides ---
-# settings.local.json is the canonical place for per-machine config
-# (paths, OS-specific permissions, local env vars). Keep it local.
+# Claude Code merges settings.local.json on top of settings.json at load
+# time. Use it for OS-specific permissions, local env vars, dev endpoints.
 settings.local.json
 
 # --- Stale settings backups ---
@@ -50,16 +50,14 @@ security_warnings_state_*.json
 mcp-needs-auth-cache.json
 
 # --- Plugins: ignore entirely ---
-# All of plugins/ is runtime state — caches, marketplace clones, and
-# per-machine manifests that are rewritten on load. Source-of-truth:
-#   - which plugins to enable → settings.json (enabledPlugins)
-#   - marketplace sources → settings.json (extraKnownMarketplaces),
-#     plus the built-in claude-plugins-official marketplace
+# All of plugins/ is runtime state, caches, marketplace clones, and
+# per-machine manifests that get rewritten on load. Plugin enablement
+# lives in settings.json → enabledPlugins (currently empty).
 plugins/
 
 # --- Projects: ignore entirely ---
 # Conversation history, todos, shell-snapshots, and auto-memory are all
-# per-machine/per-session state. Not worth syncing — each machine's
+# per-machine/per-session state. Not worth syncing, each machine's
 # Claude Code maintains its own projects/ content.
 projects/
 

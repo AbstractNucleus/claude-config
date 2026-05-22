@@ -1,6 +1,6 @@
 ---
 name: query
-description: Use when the user wants to ask a question against their Obsidian vault from any project — invoked via "/query <question>", "ask the vault", "look this up in my notes", or "what does my vault say about X". Spawns a sub-agent that loads the vault's own CLAUDE.md and runs the vault's `query` flow, so the main session never ingests vault context.
+description: Use when the user wants to ask a question against their Obsidian vault from any project, invoked via "/query <question>", "ask the vault", "look this up in my notes", or "what does my vault say about X". Spawns a sub-agent that loads the vault's own CLAUDE.md and runs the vault's `query` flow, so the main session never ingests vault context.
 ---
 
 # Query
@@ -9,17 +9,17 @@ description: Use when the user wants to ask a question against their Obsidian va
 
 Ask a question against the user's Obsidian vault from **any** project. This skill exists to keep the main session's context window clean: it dispatches a sub-agent that loads the vault's `CLAUDE.md`, reads `index.md`, searches `pages/` (and `sources/` if needed), and returns only the synthesized answer plus citations.
 
-The vault has its own `query` command defined in its `CLAUDE.md` — this skill is the *remote entry point* for that command from outside the vault directory.
+The vault has its own `query` command defined in its `CLAUDE.md`, this skill is the *remote entry point* for that command from outside the vault directory.
 
-## Setup — resolving the vault path
+## Setup
 
 This skill needs to know where the vault is. The path is stored in `VAULT.md` inside this skill's folder (gitignored, per-machine).
 
 At the start of every run:
 
 1. Try to read `VAULT.md` from this skill's folder. Strip blank lines and lines starting with `#`. The first remaining line is the vault path. If it points to a directory that exists, use it as `{vault_path}` and proceed.
-2. If `VAULT.md` is missing, empty (after stripping comments), or points to a non-existent directory: ask the user **once** — "Where's your Obsidian vault? Give me the absolute path." Write the answer to `VAULT.md` as a single line and continue. If the user says they don't have a vault, tell them this skill needs one and stop.
-3. The path may use either platform separator. Use it verbatim — don't try to normalize across OSes.
+2. If `VAULT.md` is missing, empty (after stripping comments), or points to a non-existent directory: ask the user **once**, "Where's your Obsidian vault? Give me the absolute path." Write the answer to `VAULT.md` as a single line and continue. If the user says they don't have a vault, tell them this skill needs one and stop.
+3. The path may use either platform separator. Use it verbatim, don't try to normalize across OSes.
 
 The rest of this document refers to the vault as `{vault_path}`. Substitute the real path wherever you see it (including inside the sub-agent prompt template below).
 
@@ -45,7 +45,7 @@ Token optimization. The vault's `CLAUDE.md`, `index.md`, and any page contents t
 3. If the question is empty or genuinely ambiguous, ask **one** clarifying question. Otherwise proceed.
 4. Dispatch a sub-agent (Agent tool, `subagent_type: general-purpose`) with the prompt template below, substituting `{vault_path}` and `{{question}}`.
 5. Relay the sub-agent's answer to the user. Preserve its `[[wikilinks]]` and `sources/...` citations as markdown links where useful, but do not add commentary the agent didn't produce.
-6. If the sub-agent reports "not in vault," tell the user plainly — do not guess from outside knowledge.
+6. If the sub-agent reports "not in vault," tell the user plainly, do not guess from outside knowledge.
 
 ## Sub-Agent Prompt Template
 
@@ -61,20 +61,20 @@ Steps:
 2. Read {vault_path}/index.md FIRST to orient on what pages exist.
 3. Search pages/ (and sources/ if the answer needs raw material) for content relevant to the question.
 4. Synthesize an answer grounded ONLY in what the vault contains. Do not import outside knowledge.
-5. If the vault has no relevant content, say so explicitly — do not invent or extrapolate.
+5. If the vault has no relevant content, say so explicitly, do not invent or extrapolate.
 
 Question:
 {{question}}
 
 Return format:
-- **Answer:** match the length to the question. A factual lookup gets 1–3 sentences. A "summarize everything about X" or "what do I know about Y" question gets the full picture — every relevant page surfaced, organized with subheadings if needed. Don't pad short answers; don't truncate broad ones.
+- **Answer:** match the length to the question. A factual lookup gets 1–3 sentences. A "summarize everything about X" or "what do I know about Y" question gets the full picture, every relevant page surfaced, organized with subheadings if needed. Don't pad short answers; don't truncate broad ones.
 - **Citations:** bullet list of [[page-name]] and/or sources/<filename> references you actually drew from. No citation = no claim. For breadth queries, cite every page touched.
 - **Gaps (optional):** one line if the vault partially answers but is missing something obvious.
-- **Suggested filing (optional):** if the synthesis is non-trivial and reusable, one line proposing a new page or an update to an existing page. Do NOT file it yourself — the main session will relay the suggestion to the user.
+- **Suggested filing (optional):** if the synthesis is non-trivial and reusable, one line proposing a new page or an update to an existing page. Do NOT file it yourself, the main session will relay the suggestion to the user.
 
 Calibrating length:
 - "What's my take on X?" → tight answer
-- "Summarize everything I have on X" / "all info about X" / "everything I've captured about X" → exhaustive — pull from every relevant page
+- "Summarize everything I have on X" / "all info about X" / "everything I've captured about X" → exhaustive, pull from every relevant page
 - "List all my notes about X" → enumerate them all with one-line context each
 - When in doubt, prefer completeness over brevity for breadth-shaped questions
 
@@ -91,7 +91,7 @@ When the sub-agent returns:
 
 - Show the **Answer** block as the primary response.
 - Show the **Citations** as a short list so the user can click through (use markdown link form `[[page-name]]` or `vault/sources/file.md` paths).
-- If a **Suggested filing** appeared, ask the user once: "Want me to file this as a new page / fold into `[[existing-page]]`?" If yes, the *user* re-enters the vault directory or you spawn a follow-up sub-agent to do the write — do not auto-file from here.
+- If a **Suggested filing** appeared, ask the user once: "Want me to file this as a new page / fold into `[[existing-page]]`?" If yes, the *user* re-enters the vault directory or you spawn a follow-up sub-agent to do the write, do not auto-file from here.
 
 ## Examples
 
@@ -133,5 +133,5 @@ User: `/query summarize everything I've captured about Karpathy`
 - **Don't auto-file** the answer as a new page. The vault's `query` flow asks the user first; this skill preserves that.
 - **Don't merge with outside knowledge.** If the vault doesn't say it, the answer doesn't say it.
 - **Don't truncate citations.** They are the user's audit trail.
-- **Don't run `ingest`/`promote`/`lint`** — those are explicit vault-side commands.
+- **Don't run `ingest`/`promote`/`lint`**, those are explicit vault-side commands.
 - **Don't ask multiple clarifying questions.** One, max, only if the question is genuinely empty or ambiguous.

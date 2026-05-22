@@ -8,15 +8,15 @@ Companion reference for `/research-here`. Used by the Verifier and Synthesizer a
 |---|---|---|---|---|---|
 | URL resolves (HTTP 2xx/3xx) | ✅ | ✅ | ✅ | ❌ | ✅ |
 | Page content loads (not login/paywall/JS-shell) | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Page topic matches citation context | ✅ | ✅ | ✅ | — | ❌ |
-| Page content supports the claim | ✅ | partial / tangential | ❌ contradicts | — | — |
-| Authority tag matches reality | ✅ | may be inflated | — | — | — |
+| Page topic matches citation context | ✅ | ✅ | ✅ |, | ❌ |
+| Page content supports the claim | ✅ | partial / tangential | ❌ contradicts |, |, |
+| Authority tag matches reality | ✅ | may be inflated |, |, |, |
 
 ## Authority ladder
 
-- **primary** — official spec, maintainer docs, first-party paper, RFC, standards body
-- **secondary** — reputable tech press, textbook, conference talk by a practitioner
-- **tertiary** — blog post, forum answer, marketing page, tweet
+- **primary**, official spec, maintainer docs, first-party paper, RFC, standards body
+- **secondary**, reputable tech press, textbook, conference talk by a practitioner
+- **tertiary**, blog post, forum answer, marketing page, tweet
 
 ## Publishable threshold
 
@@ -56,5 +56,5 @@ Do NOT synthesize. Report to the user instead.
 Non-aborting degradation path:
 
 1. If 1–2 angles fail verification hard (most URLs DEAD/HALLUCINATED/MISMATCH), synthesize from the surviving angles AND explicitly include a section `## Angles we could not verify` listing what was attempted and why it failed. Never silently drop.
-2. If skeptic says `needs-rework` on an angle, run re-research, then synthesize regardless of re-research outcome — tag unresolved challenges in Open questions.
+2. If skeptic says `needs-rework` on an angle, run re-research, then synthesize regardless of re-research outcome, tag unresolved challenges in Open questions.
 3. If a single high-value URL is DEAD but the claim has alternate OK sources, keep the claim, drop the dead URL, and note the dead link in the run's verification.json audit file. Future-you may want to find a replacement link.

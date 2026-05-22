@@ -1,4 +1,4 @@
-# HOSTS — your deploy targets
+# HOSTS, your deploy targets
 
 Copy this file to `HOSTS.md` (same folder) and edit it. `HOSTS.md` is gitignored; the example is committed so it survives setup on a new machine.
 
@@ -31,7 +31,7 @@ The `/deploy` skill reads this file verbatim to plan deploys. Be concrete. Use t
 
 ## How to extend this file
 
-- **Add a host:** new `##` heading + the same fields. Be explicit about role and conventions — vague entries produce vague deploys.
+- **Add a host:** new `##` heading + the same fields. Be explicit about role and conventions, vague entries produce vague deploys.
 - **Use SSH aliases**, not raw IPs. Set them up in `~/.ssh/config`.
 - **Never paste passwords or private keys here.** The AI reads this file.
 - **Project-specific overrides:** if one project deploys differently from your convention, write it as a sub-bullet under the host where it lives.

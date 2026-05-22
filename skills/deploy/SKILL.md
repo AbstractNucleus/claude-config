@@ -12,9 +12,9 @@ Deploy the current project to one of the user's hosts. Single flow; auto-detects
 1. **Read `HOSTS.md`** in this skill folder (`~/.claude/skills/deploy/HOSTS.md`). If it's missing, tell the user to copy `HOSTS.example.md` to `HOSTS.md` and fill it in, then stop.
 2. **Identify the project.** Read in parallel:
    - Git remote (`git remote -v`) → repo name and URL.
-   - `Dockerfile`, `docker-compose.yml`, `compose.yaml` — containerised? what ports does it expose?
-   - `package.json` / `pyproject.toml` / `Cargo.toml` / `go.mod` — build system + name.
-   - `README.md` — any stated deploy notes.
+   - `Dockerfile`, `docker-compose.yml`, `compose.yaml`, containerised? what ports does it expose?
+   - `package.json` / `pyproject.toml` / `Cargo.toml` / `go.mod`, build system + name.
+   - `README.md`, any stated deploy notes.
 3. **Pick the target host(s).** From `HOSTS.md`, match the project's needs to host roles (nginx gateway, docker host, bare-metal, etc.). If `HOSTS.md` is ambiguous about where this project should land, ask the user once.
 
 ## Plan first, execute second
@@ -30,9 +30,9 @@ Docker host: <e.g. bserver>
 Hostname:   <if applicable>
 
 Steps:
-1. ssh <docker host> — clone or pull repo
-2. ssh <docker host> — build + (re)start containers
-3. ssh <nginx host> — drop/update site config + reload (only if routing changed)
+1. ssh <docker host>, clone or pull repo
+2. ssh <docker host>, build + (re)start containers
+3. ssh <nginx host>, drop/update site config + reload (only if routing changed)
 ```
 
 Wait for the user to confirm before running anything destructive (anything that touches running services or shared nginx config). Deploys can't be undone from this side.
@@ -59,16 +59,16 @@ Do not blow away nginx config that is already correct. Do not stop unrelated con
 3. Wait for healthcheck or `docker compose ps` to show containers up.
 4. SSH nginx host. Drop `sites-available/<project>.conf` with `proxy_pass` to `<docker host>:<port>`. Symlink to `sites-enabled/`.
 5. `sudo nginx -t` → `sudo systemctl reload nginx`.
-6. Curl the public URL from the user's machine — verify HTTP 200 (or the expected status).
+6. Curl the public URL from the user's machine, verify HTTP 200 (or the expected status).
 
 ## Update flow
 
 1. SSH docker host.
-2. `cd <project path> && git pull` — show the diff to the user.
-3. `docker compose down && docker compose up -d --build` — or `-p <project>` if multiple stacks share the host.
+2. `cd <project path> && git pull`, show the diff to the user.
+3. `docker compose down && docker compose up -d --build`, or `-p <project>` if multiple stacks share the host.
 4. Wait for containers to be healthy.
 5. Touch nginx **only** if ports or hostnames changed in this update.
-6. Curl the public URL — verify.
+6. Curl the public URL, verify.
 
 ## Safety rules
 
