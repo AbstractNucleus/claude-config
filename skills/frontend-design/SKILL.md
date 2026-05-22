@@ -9,9 +9,9 @@ Starter skill for UI work. Owned and edited by you. Develop it as you ship.
 
 ## Setup
 
-This skill reads `PREFERENCES.md` in its folder for your default stack and design tastes. The file is tracked in git (shared across machines) but is *yours*, edit freely.
+This skill reads `PREFERENCES.md` in its folder for your default stack and design tastes. The file is gitignored (per-machine); a committed `PREFERENCES.example.md` is the template.
 
-If `PREFERENCES.md` is missing or empty, fall back to the inline defaults in [Working principles](#working-principles) below. You may also ask the user once at task start: "Anything specific I should know about stack or style before I start?", but only on substantial UI tasks, not small tweaks.
+If `PREFERENCES.md` is missing or empty, fall back to the inline defaults in [Working principles](#working-principles) below. First time on a new machine, copy `PREFERENCES.example.md` to `PREFERENCES.md` and fill it in. You may also ask the user once at task start: "Anything specific I should know about stack or style before I start?", but only on substantial UI tasks, not small tweaks.
 
 ## When to Use
 

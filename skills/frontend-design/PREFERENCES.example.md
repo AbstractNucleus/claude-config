@@ -1,5 +1,7 @@
 # Frontend preferences
 
+Copy this file to `PREFERENCES.md` (same folder) and edit it. `PREFERENCES.md` is gitignored; the example is committed so it survives setup on a new machine.
+
 Your default stack and style. Read by the `frontend-design` skill. Edit freely.
 
 ## Default stack
