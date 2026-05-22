@@ -18,7 +18,6 @@ A small set of [Claude Code](https://claude.com/claude-code) skills I use day-to
 - [`grill-me`](skills/grill-me/) interviews you about a plan or design until every branch of the decision tree is resolved.
 - [`to-prd`](skills/to-prd/) turns the current conversation into a PRD on your issue tracker.
 - [`to-issues`](skills/to-issues/) breaks a plan into independently-grabbable tickets using tracer-bullet slices.
-- [`write-a-skill`](skills/write-a-skill/) is the meta skill for authoring more skills.
 
 ### Research and notes
 
@@ -31,24 +30,24 @@ A small set of [Claude Code](https://claude.com/claude-code) skills I use day-to
 - [`git-cleanup`](skills/git-cleanup/) prunes merged local branches.
 - [`caveman`](skills/caveman/) switches into an ultra-compressed communication mode (≈75% fewer tokens).
 
-## Using a single skill
-
-Copy any one skill folder into your own `~/.claude/skills/`:
-
-```bash
-cp -r path/to/this/repo/skills/diagnose ~/.claude/skills/
-```
-
-Restart Claude Code. The skill self-registers via its `SKILL.md` frontmatter.
-
-Skills that need a path or preference (`deploy`, `note`, `query`, `frontend-design`) will ask you for it the first time they run, and save your answer to a gitignored file in that skill's folder.
-
 ## Using the whole set
 
 ```bash
 git clone https://github.com/AbstractNucleus/claude-config.git ~/.claude
 claude  # authenticates on first run
 ```
+
+Skills that need a path or preference (`deploy`, `note`, `query`, `frontend-design`) will ask you for it the first time they run, and save your answer to a gitignored file in that skill's folder.
+
+## Using a single skill
+
+If you only want one:
+
+```bash
+cp -r path/to/this/repo/skills/diagnose ~/.claude/skills/
+```
+
+Restart Claude Code. The skill self-registers via its `SKILL.md` frontmatter.
 
 ## Design notes
 

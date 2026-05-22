@@ -4,7 +4,7 @@ Git repo that syncs Claude Code config across machines. `settings.json`, `skills
 
 **Config split:** `settings.json` holds shared config (permissions, hooks, model prefs). If a machine needs overrides, create `settings.local.json`. It's gitignored and merged on top at load time. Skills that need per-machine values (vault path, deploy hosts, design preferences) store them in their own folder via a gitignored config file with a committed `.example.md` template.
 
-**Committing here:** before any commit, scan `git status` for tokens or unexpected new files. `.gitignore` may lag new Claude Code additions. If a secret is ever committed, rotate it before rewriting history.
+**Committing here:** before any commit, scan `git status` for secrets or unexpected new files. `.gitignore` may lag new Claude Code additions. If a secret is ever committed, rotate it before rewriting history.
 
 # Coding guidelines
 
