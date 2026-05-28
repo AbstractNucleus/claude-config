@@ -70,6 +70,9 @@ plugins/
 # Claude Code maintains its own projects/ content.
 projects/
 
+# --- Plans: scratch space, per-machine ---
+plans/
+
 # --- Editor / OS ---
 .DS_Store
 Thumbs.db
