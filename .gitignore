@@ -10,9 +10,12 @@ config.json
 *.pem
 *.key
 
-# --- Machine-specific overrides ---
-# Claude Code merges settings.local.json on top of settings.json at load
-# time. Use it for OS-specific permissions, local env vars, dev endpoints.
+# --- Settings: per-machine, not synced ---
+# Claude Code rewrites UI/runtime toggles (editorMode, remoteControlAtStartup,
+# notification prefs) back into settings.json on every change, which caused
+# constant cross-machine diffs. So settings.json is untracked; each machine
+# keeps its own. settings.local.json is still merged on top at load time.
+settings.json
 settings.local.json
 
 # --- Stale settings backups ---
