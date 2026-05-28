@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Find deepening opportunities in a codebase. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable. Will read `CONTEXT.md` and `docs/adr/` if they exist; creates `CONTEXT.md` lazily otherwise.
+description: Find deepening opportunities in a codebase. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable. Will read `CONTEXT.md` and `docs/decisions/` if they exist; creates `CONTEXT.md` lazily otherwise.
 ---
 
 # Improve Codebase Architecture
@@ -17,13 +17,13 @@ Key principles (see [LANGUAGE.md](LANGUAGE.md) for definitions):
 - **The interface is the test surface.**
 - **One adapter = hypothetical seam. Two adapters = real seam.**
 
-This skill is _informed_ by the project's domain model. The domain language gives names to good seams; ADRs record decisions the skill should not re-litigate.
+This skill is _informed_ by the project's domain model. The domain language gives names to good seams; decision records capture choices the skill should not re-litigate.
 
 ## Process
 
 ### 1. Explore
 
-Read the project's domain glossary and any ADRs in the area you're touching first.
+Read the project's domain glossary and any recorded decisions in the area you're touching first.
 
 Then dispatch an exploration sub-agent (use the Task/Agent tool with whatever exploration agent type is available, or use Grep/Glob/Read directly if no specialized agent exists) to walk the codebase. Don't follow rigid heuristics, explore organically and note where you experience friction:
 
@@ -46,7 +46,7 @@ Present a numbered list of deepening opportunities. For each candidate:
 
 **Use CONTEXT.md vocabulary for the domain, and [LANGUAGE.md](LANGUAGE.md) vocabulary for the architecture.** If `CONTEXT.md` defines "Order," talk about "the Order intake module", not "the FooBarHandler," and not "the Order service."
 
-**ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly (e.g. _"contradicts ADR-0007, but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
+**Conflicts with recorded decisions**: if a candidate contradicts an existing decision record, only surface it when the friction is real enough to warrant revisiting the decision. Mark it clearly (e.g. _"contradicts decision 0007, but worth reopening because…"_). Don't list every theoretical refactor a past decision rules out.
 
 Do NOT propose interfaces yet. Ask the user: "Which of these would you like to explore?"
 
@@ -54,11 +54,21 @@ Do NOT propose interfaces yet. Ask the user: "Which of these would you like to e
 
 Once the user picks a candidate, drop into a grilling conversation. Walk the design tree with them, constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
 
-**Exit when** the user picks a final design or explicitly asks you to start implementing. Don't loop indefinitely.
+**Exit when** the user picks a final design. Move to step 4 to land it. Don't loop indefinitely.
 
 Side effects happen inline as decisions crystallize:
 
 - **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md` (the project's domain glossary, a simple list of `Term, one-sentence definition`). Create the file lazily at the project root if it doesn't exist.
 - **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
-- **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing, skip ephemeral reasons ("not worth it right now") and self-evident ones. Write it to `docs/adr/NNNN-short-title.md` with: Context, Decision, Consequences. Number sequentially.
+- **User rejects the candidate with a load-bearing reason?** Offer to record it, framed as: _"Want me to record this as a decision so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing, skip ephemeral reasons ("not worth it right now") and self-evident ones. Write it to `docs/decisions/NNNN-short-title.md` with: Context, Decision, Consequences. Number sequentially.
 - **Want to explore alternative interfaces for the deepened module?** See [INTERFACE-DESIGN.md](INTERFACE-DESIGN.md).
+
+### 4. After the design
+
+A chosen design needs a landing. Ask the user which:
+
+- **Implement now**, only if small enough to land cleanly in this session.
+- **Record and move on**, write a decision record at `docs/decisions/NNNN-short-title.md` (Context, Decision, Consequences) and stop.
+- **Slice into issues**, invoke the `to-issues` skill to turn the design into independently-grabbable tickets.
+
+Ask once, then act. If the user doesn't pick, default to recording the decision so the carry isn't lost.

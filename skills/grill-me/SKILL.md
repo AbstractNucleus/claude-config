@@ -25,7 +25,7 @@ Skip:
 
 Before asking, try in order:
 1. Look at the code — does it already imply an answer?
-2. Read project docs / `CLAUDE.md` / ADRs
+2. Read project docs / `CLAUDE.md` / decision records
 3. Then ask the user
 
 ## Termination
