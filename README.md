@@ -49,6 +49,14 @@ cp -r path/to/this/repo/skills/diagnose ~/.claude/skills/
 
 Restart Claude Code. The skill self-registers via its `SKILL.md` frontmatter.
 
+## Repo layout
+
+This repo doubles as a synced `~/.claude/` — cloning it there carries skills and config across machines. Tracked: `skills/`, `CLAUDE.md`, `README.md`. Everything else is gitignored: credentials, install state, plugins, conversation history, logs, caches, and `settings.json`. [`.gitignore`](.gitignore) is the authoritative list.
+
+`settings.json` is **per-machine, not synced** — Claude Code rewrites UI/runtime toggles (editor mode, remote-control, notifications) back into it on every change, which caused constant cross-machine churn. So each machine keeps its own, and shared config (permissions, hooks, model) is set up per machine.
+
+Before committing, scan `git status` for secrets or unexpected new files (`.gitignore` can lag new Claude Code additions). If a secret ever lands in a commit, rotate it before rewriting history.
+
 ## Design notes
 
 - **Standalone.** No skill calls another skill by name. You can delete or copy any folder without breaking the rest.
